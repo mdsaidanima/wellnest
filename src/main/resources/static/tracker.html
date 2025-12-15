@@ -279,11 +279,13 @@
             <div class="logo-badge">WELLNEST</div>
             <nav class="nav-links">
                 <a href="index.html">HOME</a>
-                <a href="about.html">ABOUT US</a>
+                <a href="dashboard.html">DASHBOARD</a>
                 <a href="tracker.html" class="active">TRACKER</a>
                 <a href="health-tools.html">HEALTH TOOLS</a>
-                <a href="login.html">LOGIN</a>
-                <a href="signup.html">SIGN UP</a>
+                <a href="blog.html">BLOG</a>
+                <a href="trainers.html">TRAINERS</a>
+                <a href="profile.html">PROFILE</a>
+                <a class="nav-logout" id="logoutBtn">LOGOUT</a>
             </nav>
         </div>
     </header>
@@ -433,6 +435,18 @@
     </footer>
 
     <script src="tracker.js"></script>
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+
+        // Basic user check
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 
 </html>
