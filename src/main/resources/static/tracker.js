@@ -219,24 +219,60 @@ async function loadMeals() {
 
 // -------- WATER & SLEEP --------
 
+// Auto-detect sleep quality based on hours
+function detectSleepQuality(hours) {
+  if (!hours || hours <= 0) return "";
+
+  if (hours >= 8) return "Excellent";
+  if (hours >= 7) return "Good";
+  if (hours >= 6) return "Average";
+  return "Poor";
+}
+
+// Show water intake feedback
+function showWaterFeedback(liters) {
+  const feedbackEl = document.getElementById("waterFeedback");
+
+  if (!liters || liters <= 0) {
+    feedbackEl.style.display = "none";
+    return;
+  }
+
+  feedbackEl.style.display = "block";
+
+  const recommended = 2.5; // liters per day
+
+  if (liters >= recommended) {
+    feedbackEl.innerHTML = `✅ <span style="color: #18b046; font-weight: bold;">Sufficient hydration!</span> You're meeting the daily recommendation.`;
+  } else if (liters >= recommended * 0.7) {
+    feedbackEl.innerHTML = `⚠️ <span style="color: #ff9800; font-weight: bold;">Moderate hydration</span> - Try to reach ${recommended}L for optimal health.`;
+  } else {
+    feedbackEl.innerHTML = `❌ <span style="color: #ff5252; font-weight: bold;">Insufficient water intake</span> - Aim for at least ${recommended}L daily.`;
+  }
+}
+
 async function logWaterSleep() {
   const auth = getAuthInfo();
   if (!auth) return;
 
   const waterStr = document.getElementById("waterIntakeLiters").value;
   const sleepStr = document.getElementById("sleepHours").value;
-  const quality = document.getElementById("sleepQuality").value;
+  const qualitySelect = document.getElementById("sleepQuality");
 
   if (!waterStr && !sleepStr) {
     alert("Enter at least water intake or sleep hours.");
     return;
   }
 
+  // Auto-detect sleep quality
+  const sleepHours = sleepStr ? parseFloat(sleepStr) : null;
+  const autoQuality = sleepHours ? detectSleepQuality(sleepHours) : null;
+
   const payload = {
     userId: auth.userId,
     waterIntakeLiters: waterStr ? parseFloat(waterStr) : null,
-    sleepHours: sleepStr ? parseFloat(sleepStr) : null,
-    sleepQuality: quality || null,
+    sleepHours: sleepHours,
+    sleepQuality: autoQuality, // Use auto-detected quality
     logDate: new Date().toISOString().slice(0, 10)
   };
 
@@ -257,10 +293,26 @@ async function logWaterSleep() {
     }
 
     await loadWaterSleep();
+
+    // Show success message with detected quality
+    if (autoQuality) {
+      alert(`Logged successfully!\n\nSleep Quality Detected: ${autoQuality}\n${getSleepQualityMessage(autoQuality)}`);
+    }
   } catch (err) {
     console.error("Water/sleep fetch error:", err);
     alert("Error while logging water/sleep. Check console.");
   }
+}
+
+// Get helpful message based on sleep quality
+function getSleepQualityMessage(quality) {
+  const messages = {
+    "Excellent": "Great job! You're getting optimal rest. 🌟",
+    "Good": "You're doing well! Keep maintaining this sleep schedule. 👍",
+    "Average": "Consider adding 30-60 more minutes of sleep for better recovery. 😴",
+    "Poor": "Try to get more sleep! Aim for 7-8 hours for optimal health. ⚠️"
+  };
+  return messages[quality] || "";
 }
 
 async function loadWaterSleep() {
@@ -291,16 +343,40 @@ async function loadWaterSleep() {
     items.forEach((ws) => {
       const div = document.createElement("div");
       div.className = "log-item";
+
+      // Determine water status
+      const waterLiters = ws.waterIntakeLiters || 0;
+      let waterStatus = "";
+      let waterColor = "#666";
+
+      if (waterLiters >= 2.5) {
+        waterStatus = "✅ Sufficient";
+        waterColor = "#18b046";
+      } else if (waterLiters >= 1.75) {
+        waterStatus = "⚠️ Moderate";
+        waterColor = "#ff9800";
+      } else if (waterLiters > 0) {
+        waterStatus = "❌ Insufficient";
+        waterColor = "#ff5252";
+      }
+
+      // Sleep quality emoji
+      const qualityEmoji = {
+        "Excellent": "🌟",
+        "Good": "👍",
+        "Average": "😴",
+        "Poor": "⚠️"
+      };
+      const emoji = qualityEmoji[ws.sleepQuality] || "";
+
       div.innerHTML = `
         <div class="log-main">
           <div class="log-title">
-            ${ws.waterIntakeLiters || 0} L water
+            💧 ${waterLiters} L water <span style="color: ${waterColor}; font-size: 11px; margin-left: 8px;">${waterStatus}</span>
           </div>
           <div class="log-meta">
             ${ws.sleepHours ? ws.sleepHours + " hrs sleep" : "Sleep not set"}
-          </div>
-          <div class="log-secondary">
-            ${ws.sleepQuality || ""}
+            ${ws.sleepQuality ? ` • ${emoji} ${ws.sleepQuality}` : ""}
           </div>
         </div>
         <div class="log-secondary">
@@ -325,6 +401,37 @@ document.addEventListener("DOMContentLoaded", () => {
   if (workoutBtn) workoutBtn.addEventListener("click", logWorkout);
   if (mealBtn) mealBtn.addEventListener("click", logMeal);
   if (waterSleepBtn) waterSleepBtn.addEventListener("click", logWaterSleep);
+
+  // Real-time auto-detection for sleep quality
+  const sleepHoursInput = document.getElementById("sleepHours");
+  const sleepQualitySelect = document.getElementById("sleepQuality");
+
+  if (sleepHoursInput && sleepQualitySelect) {
+    sleepHoursInput.addEventListener("input", (e) => {
+      const hours = parseFloat(e.target.value);
+      const quality = detectSleepQuality(hours);
+
+      if (quality) {
+        sleepQualitySelect.value = quality;
+        sleepQualitySelect.style.color = "#18b046";
+        sleepQualitySelect.style.fontWeight = "bold";
+      } else {
+        sleepQualitySelect.value = "";
+        sleepQualitySelect.style.color = "";
+        sleepQualitySelect.style.fontWeight = "";
+      }
+    });
+  }
+
+  // Real-time feedback for water intake
+  const waterInput = document.getElementById("waterIntakeLiters");
+
+  if (waterInput) {
+    waterInput.addEventListener("input", (e) => {
+      const liters = parseFloat(e.target.value);
+      showWaterFeedback(liters);
+    });
+  }
 
   // Load today's logs
   loadWorkouts();

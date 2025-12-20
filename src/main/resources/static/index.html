@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <title>WellNest | Smart Health & Fitness Companion</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- All styles in this file -->
   <style>
     * {
       margin: 0;
@@ -15,10 +17,7 @@
     body {
       font-family: Arial, Helvetica, sans-serif;
       color: #fff;
-      background-color: #000;
-      background: radial-gradient(circle at top, #0f3d1e 0%, #000000 85%);
-      background-attachment: fixed;
-      background-repeat: no-repeat;
+      background-color: #000000;
     }
 
     a {
@@ -26,6 +25,7 @@
     }
 
     /* ---------- HEADER / NAVBAR ---------- */
+
     .header {
       position: fixed;
       top: 0;
@@ -34,11 +34,10 @@
       z-index: 100;
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(6px);
-      border-bottom: 1px solid rgba(24, 176, 70, 0.1);
     }
 
     .nav-container {
-      max-width: 1200px;
+      max-width: 1150px;
       margin: 0 auto;
       padding: 12px 20px;
       display: flex;
@@ -46,6 +45,7 @@
       justify-content: space-between;
     }
 
+    /* Logo left */
     .logo-badge {
       padding: 8px 14px;
       border-radius: 999px;
@@ -58,112 +58,135 @@
       color: #18b046;
     }
 
+    /* Center nav links */
+    /* Center nav links */
     .nav-links {
       display: flex;
-      gap: 24px;
-      font-size: 14px;
+      gap: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .nav-links a {
-      color: #f4f4f4;
+      color: #e0e0e0;
       text-transform: uppercase;
-      transition: color 0.3s;
+      position: relative;
+      padding: 5px 0;
+      transition: color 0.3s ease;
     }
 
-    .nav-links a:hover,
-    .nav-links a.active {
+    .nav-links a:hover {
       color: #18b046;
+      text-shadow: 0 0 15px rgba(24, 176, 70, 0.9), 0 0 25px rgba(24, 176, 70, 0.5);
     }
 
+    /* Animated underline */
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 50%;
+      background-color: #18b046;
+      transform: translateX(-50%);
+      transition: width 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+      box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
+    }
+
+    /* Premium Call Button */
     .call-btn {
-      padding: 8px 18px;
+      padding: 10px 24px;
       border-radius: 999px;
-      background: #18b046;
+      background: linear-gradient(135deg, #18b046 0%, #14932a 100%);
       color: #ffffff;
-      border: none;
       font-size: 12px;
-      font-weight: bold;
+      font-weight: 700;
+      border: none;
+      letter-spacing: 1px;
       cursor: pointer;
-      text-transform: uppercase;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(24, 176, 70, 0.3);
     }
 
     .call-btn:hover {
-      background: #14932a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(24, 176, 70, 0.5);
+      background: linear-gradient(135deg, #1abd4b 0%, #18b046 100%);
     }
 
     /* ---------- HERO SECTION ---------- */
+
     .hero {
       position: relative;
       min-height: 90vh;
-      background: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0.6) 100%),
-        url('images/image.png') center/cover no-repeat;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.55)),
+        url("images/image.png") center/cover no-repeat;
+      /* Replace images/image.png with your image */
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 80px 20px 40px;
-      text-align: center;
+      /* top padding for fixed header */
     }
 
     .hero-content {
-      max-width: 800px;
+      max-width: 700px;
       margin: 0 auto;
-      z-index: 1;
     }
 
     .hero-title {
-      font-size: 56px;
+      font-size: 52px;
       font-weight: 700;
       line-height: 1.1;
-      margin-bottom: 20px;
-      color: #fff;
-    }
-
-    .hero-title span {
-      color: #18b046;
+      margin-bottom: 15px;
     }
 
     .hero-subtitle {
       font-size: 24px;
       font-weight: 400;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
       color: #e5e5e5;
     }
 
     .hero-text {
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.7;
       color: #d0d0d0;
-      max-width: 600px;
-      margin: 0 auto 32px;
+      max-width: 520px;
+      margin-bottom: 28px;
     }
 
     .hero-btn {
       display: inline-block;
-      padding: 14px 32px;
+      padding: 12px 28px;
       border-radius: 999px;
-      background: #18b046;
+      border: 2px solid #18b046;
       color: #ffffff;
       font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
-      transition: all 0.3s;
+      background: #18b046;
     }
 
     .hero-btn:hover {
-      background: #14932a;
-      transform: translateY(-2px);
+      background: transparent;
     }
 
-    /* Slider dots */
+    /* Slider numbers bottom-left (01 02 03) */
     .hero-slider-dots {
       position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 25px;
+      left: 40px;
       font-size: 13px;
       letter-spacing: 6px;
-      color: #666;
+      color: #e5e5e5;
     }
 
     .hero-slider-dots span.active {
@@ -171,319 +194,58 @@
       font-weight: bold;
     }
 
-    /* ---------- PROGRAMS ---------- */
-    .programs-section {
-      padding: 100px 20px;
-      background: #000;
-    }
+    /* ---------- BELOW HERO PLACEHOLDER SECTION ---------- */
 
-    .section-header {
-      text-align: center;
-      margin-bottom: 60px;
-    }
-
-    .section-header h2 {
-      font-size: 36px;
+    .content-strip {
+      background: #0a0a0a;
       color: #fff;
-      margin-bottom: 15px;
+      padding: 40px 20px 60px;
     }
 
-    .header-underline {
-      width: 80px;
-      height: 4px;
-      background: #18b046;
-      margin: 0 auto 20px;
-    }
-
-    .section-header p {
-      font-size: 16px;
-      color: #999;
-    }
-
-    .programs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
+    .content-inner {
+      max-width: 1150px;
       margin: 0 auto;
+      font-size: 15px;
     }
 
-    .program-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 12px;
-      transition: all 0.3s ease;
-    }
-
-    .program-card:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: #18b046;
-      transform: translateY(-5px);
-    }
-
-    .program-icon {
-      font-size: 40px;
-      margin-bottom: 15px;
-    }
-
-    .program-card h3 {
-      font-size: 20px;
+    .content-inner h2 {
       color: #18b046;
-      margin: 0 0 12px;
-    }
-
-    .program-card p {
-      font-size: 14px;
-      color: #bbb;
-      line-height: 1.6;
-      margin-bottom: 15px;
-    }
-
-    .program-card ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .program-card li {
-      font-size: 13px;
-      color: #888;
-      padding: 6px 0 6px 20px;
-      position: relative;
-    }
-
-    .program-card li:before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      color: #18b046;
-      font-weight: bold;
-    }
-
-    /* ---------- TRAINERS ---------- */
-    .trainers-section {
-      padding: 100px 20px;
-      background: rgba(24, 176, 70, 0.03);
-    }
-
-    .trainers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .trainer-card {
-      background: #000;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 35px;
-      border-radius: 12px;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .trainer-card:hover {
-      border-color: #18b046;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .trainer-avatar {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
-
-    .trainer-card h3 {
-      font-size: 20px;
-      color: #fff;
-      margin: 0 0 10px;
-    }
-
-    .trainer-card p {
-      font-size: 14px;
-      color: #aaa;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    /* ---------- FEATURES ---------- */
-    .features-section {
-      padding: 100px 20px;
-      background: #000;
-    }
-
-    .features-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .feature-item {
-      background: rgba(255, 255, 255, 0.03);
-      border-left: 4px solid #18b046;
-      padding: 30px;
-      border-radius: 6px;
-    }
-
-    .feature-number {
-      font-size: 24px;
-      font-weight: 700;
-      color: #18b046;
-      margin-bottom: 12px;
-      opacity: 0.5;
-    }
-
-    .feature-item h4 {
-      font-size: 18px;
-      color: #fff;
-      margin: 0 0 10px;
-    }
-
-    .feature-item p {
-      font-size: 14px;
-      color: #999;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    /* ---------- CTA ---------- */
-    .cta-section {
-      padding: 100px 20px;
-      background: radial-gradient(circle at center, rgba(24, 176, 70, 0.2) 0%, #000 70%);
-      text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .cta-section h2 {
-      font-size: 42px;
-      color: #fff;
-      margin-bottom: 20px;
-    }
-
-    .cta-section p {
-      font-size: 18px;
-      color: #bbb;
-      margin-bottom: 40px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .cta-buttons {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 14px 36px;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-      text-transform: uppercase;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary {
-      background: #18b046;
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: #14932a;
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .btn-secondary:hover {
-      border-color: #fff;
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    /* ---------- FOOTER ---------- */
-    .main-footer {
-      background: #000;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 60px 20px 20px;
-    }
-
-    .footer-content {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 40px;
-      max-width: 1200px;
-      margin: 0 auto 40px;
-    }
-
-    .footer-section h4 {
-      font-size: 16px;
-      color: #18b046;
-      margin: 0 0 20px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .footer-section p {
-      color: #777;
-      font-size: 14px;
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .footer-section ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .footer-section li {
       margin-bottom: 10px;
     }
 
-    .footer-section a {
-      color: #888;
-      font-size: 14px;
-      transition: color 0.3s;
+    .content-inner p {
+      color: #bbb;
+      line-height: 1.7;
     }
 
-    .footer-section a:hover {
-      color: #18b046;
-    }
+    /* ---------- RESPONSIVE ---------- */
 
-    .footer-bottom {
-      text-align: center;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      color: #555;
-      font-size: 13px;
-    }
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+        /* simple: hide on very small screens */
+      }
 
-    @media (max-width: 768px) {
       .hero-title {
-        font-size: 36px;
+        font-size: 38px;
       }
 
       .hero-subtitle {
-        font-size: 18px;
+        font-size: 20px;
       }
 
-      .nav-links {
-        display: none;
+      .hero {
+        text-align: center;
       }
 
-      .cta-section h2 {
-        font-size: 32px;
+      .hero-text {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-slider-dots {
+        left: 50%;
+        transform: translateX(-50%);
       }
     }
   </style>
@@ -494,30 +256,35 @@
   <!-- HEADER / NAVBAR -->
   <header class="header">
     <div class="nav-container">
+      <!-- Left: logo badge -->
       <div class="logo-badge">WELLNEST</div>
+
+      <!-- Center: nav links -->
       <nav class="nav-links">
-        <a href="index.html" class="active">HOME</a>
-        <a href="about.html">ABOUT US</a>
-        <a href="tracker.html">TRACKER</a>
-        <a href="health-tools.html">HEALTH TOOLS</a>
-        <a href="login.html">LOGIN</a>
-        <a href="signup.html">SIGN UP</a>
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+
+        <a href="login.html">Login</a>
+        <a href="signup.html">Sign up</a>
       </nav>
+
+      <!-- Right: call button -->
       <button class="call-btn">CALL: +91 99999 99999</button>
     </div>
   </header>
 
   <!-- HERO SECTION -->
-  <section class="hero">
+  <section id="hero" class="hero">
     <div class="hero-content">
-      <h1 class="hero-title">Get fit. <br><span>Stay healthy.</span></h1>
-      <h2 class="hero-subtitle">Your Personal Smart Health Companion</h2>
+      <h1 class="hero-title">Get fit &amp; healthy.</h1>
+      <h2 class="hero-subtitle">WellNest – Smart Health &amp; Fitness Companion</h2>
       <p class="hero-text">
-        Track your workouts, nutrition, sleep, and hydration. Connect with expert trainers and achieve your fitness
-        goals with WellNest.
+        Set your fitness goals, track your weight and workouts, and stay connected with your trainer.
+        WellNest gives you a clean dashboard to manage your entire health journey in one place.
       </p>
-      <a href="signup.html" class="hero-btn">Start Your Journey</a>
+      <a href="signup.html" class="hero-btn">Get a Membership</a>
     </div>
+
     <div class="hero-slider-dots">
       <span class="active">01.</span>
       <span>02.</span>
@@ -527,161 +294,475 @@
 
   <!-- PROGRAMS SECTION -->
   <section id="programs" class="programs-section">
-    <div class="section-header">
-      <h2>Our Programs</h2>
-      <div class="header-underline"></div>
-      <p>Choose the program that fits your fitness journey</p>
+    <div class="content-inner">
+      <div class="section-header">
+        <h2>Our Programs</h2>
+        <div class="header-underline"></div>
+        <p>Choose the program that fits your fitness journey</p>
+      </div>
+
+      <div class="programs-grid">
+        <div class="program-card">
+          <div class="program-icon">💪</div>
+          <h3>Strength Training</h3>
+          <p>Build muscle and increase your strength with personalized workout plans designed for your goals.</p>
+          <ul>
+            <li>Custom workout routines</li>
+            <li>Progressive overload tracking</li>
+            <li>Trainer guidance</li>
+          </ul>
+        </div>
+
+        <div class="program-card">
+          <div class="program-icon">⚡</div>
+          <h3>Weight Loss</h3>
+          <p>Achieve your weight loss goals with proven strategies and continuous progress monitoring.</p>
+          <ul>
+            <li>Cardio & HIIT programs</li>
+            <li>Nutrition guidance</li>
+            <li>Weekly check-ins</li>
+          </ul>
+        </div>
+
+        <div class="program-card">
+          <div class="program-icon">🏃</div>
+          <h3>General Health</h3>
+          <p>Improve your overall health and wellness with balanced fitness and lifestyle programs.</p>
+          <ul>
+            <li>Flexibility training</li>
+            <li>Stress relief workouts</li>
+            <li>Health tracking</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <div class="programs-grid">
-      <div class="program-card">
-        <div class="program-icon">💪</div>
-        <h3>Strength Training</h3>
-        <p>Build muscle and increase your strength with personalized workout plans designed for your goals.</p>
-        <ul>
-          <li>Custom workout routines</li>
-          <li>Progressive overload tracking</li>
-          <li>Trainer guidance</li>
-        </ul>
-      </div>
+    <style>
+      .programs-section {
+        padding: 80px 20px;
+        background: #0a0a0a;
+      }
 
-      <div class="program-card">
-        <div class="program-icon">⚡</div>
-        <h3>Weight Loss</h3>
-        <p>Achieve your weight loss goals with proven strategies and continuous progress monitoring.</p>
-        <ul>
-          <li>Cardio & HIIT programs</li>
-          <li>Nutrition guidance</li>
-          <li>Weekly check-ins</li>
-        </ul>
-      </div>
+      .section-header {
+        text-align: center;
+        margin-bottom: 60px;
+      }
 
-      <div class="program-card">
-        <div class="program-icon">🏃</div>
-        <h3>General Health</h3>
-        <p>Improve your overall health and wellness with balanced fitness and lifestyle programs.</p>
-        <ul>
-          <li>Flexibility training</li>
-          <li>Stress relief workouts</li>
-          <li>Health tracking</li>
-        </ul>
-      </div>
-    </div>
+      .section-header h2 {
+        font-size: 42px;
+        color: #fff;
+        margin-bottom: 15px;
+      }
+
+      .header-underline {
+        width: 80px;
+        height: 4px;
+        background: #18b046;
+        margin: 0 auto 20px;
+      }
+
+      .section-header p {
+        font-size: 16px;
+        color: #999;
+      }
+
+      .programs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .program-card {
+        background: rgba(24, 176, 70, 0.05);
+        border: 1px solid rgba(24, 176, 70, 0.3);
+        padding: 30px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .program-card:hover {
+        background: rgba(24, 176, 70, 0.15);
+        border-color: #18b046;
+        transform: translateY(-8px);
+      }
+
+      .program-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+
+      .program-card h3 {
+        font-size: 22px;
+        color: #18b046;
+        margin-bottom: 12px;
+        margin-top: 0;
+      }
+
+      .program-card p {
+        font-size: 14px;
+        color: #bbb;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      .program-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .program-card li {
+        font-size: 13px;
+        color: #999;
+        padding: 6px 0;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .program-card li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #18b046;
+        font-weight: bold;
+      }
+    </style>
   </section>
 
   <!-- TRAINERS SECTION -->
   <section id="trainers" class="trainers-section">
-    <div class="section-header">
-      <h2>Our Trainers</h2>
-      <div class="header-underline"></div>
-      <p>Expert trainers ready to guide your fitness journey</p>
+    <div class="content-inner">
+      <div class="section-header">
+        <h2>Our Trainers</h2>
+        <div class="header-underline"></div>
+        <p>Expert trainers ready to guide your fitness journey</p>
+      </div>
+
+      <div class="trainers-grid">
+        <div class="trainer-card">
+          <div class="trainer-avatar">👨‍🏫</div>
+          <h3>Expert Trainers</h3>
+          <p>Our trainers are certified professionals with years of experience in fitness coaching.</p>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-avatar">📱</div>
+          <h3>Personal Guidance</h3>
+          <p>Get personalized workout plans and real-time feedback tailored to your fitness level.</p>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-avatar">📈</div>
+          <h3>Progress Tracking</h3>
+          <p>Monitor your improvements with detailed analytics and progress reports.</p>
+        </div>
+      </div>
     </div>
 
-    <div class="trainers-grid">
-      <div class="trainer-card">
-        <div class="trainer-avatar">👨‍🏫</div>
-        <h3>Expert Trainers</h3>
-        <p>Our trainers are certified professionals with years of experience in fitness coaching.</p>
-      </div>
+    <style>
+      .trainers-section {
+        padding: 80px 20px;
+        background: #000;
+      }
 
-      <div class="trainer-card">
-        <div class="trainer-avatar">📱</div>
-        <h3>Personal Guidance</h3>
-        <p>Get personalized workout plans and real-time feedback tailored to your fitness level.</p>
-      </div>
+      .trainers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
 
-      <div class="trainer-card">
-        <div class="trainer-avatar">📈</div>
-        <h3>Progress Tracking</h3>
-        <p>Monitor your improvements with detailed analytics and progress reports.</p>
-      </div>
-    </div>
+      .trainer-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(24, 176, 70, 0.2);
+        padding: 35px;
+        border-radius: 10px;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .trainer-card:hover {
+        background: rgba(24, 176, 70, 0.1);
+        border-color: #18b046;
+        transform: translateY(-5px);
+      }
+
+      .trainer-avatar {
+        font-size: 56px;
+        margin-bottom: 20px;
+      }
+
+      .trainer-card h3 {
+        font-size: 20px;
+        color: #18b046;
+        margin: 0 0 12px 0;
+      }
+
+      .trainer-card p {
+        font-size: 14px;
+        color: #aaa;
+        line-height: 1.6;
+        margin: 0;
+      }
+    </style>
   </section>
 
   <!-- FEATURES SECTION -->
   <section class="features-section">
-    <div class="section-header">
-      <h2>Why WellNest?</h2>
-      <div class="header-underline"></div>
-      <p>Everything you need to succeed in your fitness journey</p>
+    <div class="content-inner">
+      <div class="section-header">
+        <h2>Why WellNest?</h2>
+        <div class="header-underline"></div>
+        <p>Everything you need to succeed in your fitness journey</p>
+      </div>
+
+      <div class="features-list">
+        <div class="feature-item">
+          <div class="feature-number">01</div>
+          <h4>Secure Authentication</h4>
+          <p>Your account is protected with enterprise-grade security. Separate profiles for users and trainers.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-number">02</div>
+          <h4>Personalized Dashboard</h4>
+          <p>View your fitness stats, progress charts, and goals in one clean, intuitive interface.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-number">03</div>
+          <h4>Real-Time Tracking</h4>
+          <p>Log workouts, monitor weight changes, and track progress in real-time with instant updates.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-number">04</div>
+          <h4>Trainer Connection</h4>
+          <p>Connect with professional trainers who provide personalized guidance and motivation.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-number">05</div>
+          <h4>Progress Analytics</h4>
+          <p>Detailed reports and insights help you understand your fitness trends and make informed decisions.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-number">06</div>
+          <h4>Mobile Friendly</h4>
+          <p>Access WellNest on any device, anytime, anywhere. Responsive design for all screen sizes.</p>
+        </div>
+      </div>
     </div>
 
-    <div class="features-list">
-      <div class="feature-item">
-        <div class="feature-number">01</div>
-        <h4>Secure Authentication</h4>
-        <p>Your account is protected with enterprise-grade security. Separate profiles for users and trainers.</p>
-      </div>
+    <style>
+      .features-section {
+        padding: 80px 20px;
+        background: #0a0a0a;
+      }
 
-      <div class="feature-item">
-        <div class="feature-number">02</div>
-        <h4>Personalized Dashboard</h4>
-        <p>View your fitness stats, progress charts, and goals in one clean, intuitive interface.</p>
-      </div>
+      .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 30px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
 
-      <div class="feature-item">
-        <div class="feature-number">03</div>
-        <h4>Real-Time Tracking</h4>
-        <p>Log workouts, monitor weight changes, and track progress in real-time with instant updates.</p>
-      </div>
+      .feature-item {
+        background: rgba(24, 176, 70, 0.08);
+        border-left: 4px solid #18b046;
+        padding: 25px;
+        border-radius: 6px;
+      }
 
-      <div class="feature-item">
-        <div class="feature-number">04</div>
-        <h4>Trainer Connection</h4>
-        <p>Connect with professional trainers who provide personalized guidance and motivation.</p>
-      </div>
+      .feature-number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #18b046;
+        margin-bottom: 10px;
+      }
 
-      <div class="feature-item">
-        <div class="feature-number">05</div>
-        <h4>Progress Analytics</h4>
-        <p>Detailed reports and insights help you understand your fitness trends and make informed decisions.</p>
-      </div>
+      .feature-item h4 {
+        font-size: 16px;
+        color: #fff;
+        margin: 0 0 10px 0;
+      }
 
-      <div class="feature-item">
-        <div class="feature-number">06</div>
-        <h4>Mobile Friendly</h4>
-        <p>Access WellNest on any device, anytime, anywhere. Responsive design for all screen sizes.</p>
-      </div>
-    </div>
+      .feature-item p {
+        font-size: 13px;
+        color: #999;
+        margin: 0;
+        line-height: 1.6;
+      }
+    </style>
   </section>
 
   <!-- CTA SECTION -->
   <section class="cta-section">
-    <h2>Ready to Transform Your Fitness?</h2>
-    <p>Join thousands of users achieving their fitness goals with WellNest</p>
-    <div class="cta-buttons">
-      <a href="signup.html" class="btn btn-primary">Sign Up Now</a>
-      <a href="about.html" class="btn btn-secondary">Learn More</a>
+    <div class="content-inner">
+      <h2>Ready to Transform Your Fitness?</h2>
+      <p>Join thousands of users achieving their fitness goals with WellNest</p>
+      <div class="cta-buttons">
+        <a href="signup.html" class="btn btn-primary">Sign Up Now</a>
+        <a href="about.html" class="btn btn-secondary">Learn More</a>
+      </div>
     </div>
+
+    <style>
+      .cta-section {
+        padding: 80px 20px;
+        background: linear-gradient(135deg, rgba(24, 176, 70, 0.15) 0%, rgba(24, 176, 70, 0.05) 100%);
+        border-top: 2px solid rgba(24, 176, 70, 0.3);
+        border-bottom: 2px solid rgba(24, 176, 70, 0.3);
+        text-align: center;
+      }
+
+      .cta-section h2 {
+        font-size: 42px;
+        color: #fff;
+        margin-bottom: 15px;
+      }
+
+      .cta-section p {
+        font-size: 18px;
+        color: #bbb;
+        margin-bottom: 40px;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 14px 35px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 14px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #18b046;
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: #14932a;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(24, 176, 70, 0.3);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: #18b046;
+        border: 2px solid #18b046;
+      }
+
+      .btn-secondary:hover {
+        background: #18b046;
+        color: #fff;
+        transform: translateY(-3px);
+      }
+    </style>
   </section>
 
   <!-- FOOTER -->
   <footer class="main-footer">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>WellNest</h4>
-        <p>Your personal smart health and fitness companion.</p>
+    <div class="content-inner">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>WellNest</h4>
+          <p>Your personal smart health and fitness companion.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="#programs">Programs</a></li>
+            <li><a href="#trainers">Trainers</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="signup.html">Sign Up</a></li>
+            <li><a href="login.html">Login</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="#programs">Programs</a></li>
-          <li><a href="#trainers">Trainers</a></li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h4>Account</h4>
-        <ul>
-          <li><a href="signup.html">Sign Up</a></li>
-          <li><a href="login.html">Login</a></li>
-        </ul>
+      <div class="footer-bottom">
+        <p>&copy; 2025 WellNest – Smart Health & Fitness Companion. All rights reserved.</p>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2025 WellNest – Smart Health & Fitness Companion. All rights reserved.</p>
-    </div>
+
+    <style>
+      .main-footer {
+        background: #000;
+        border-top: 1px solid rgba(24, 176, 70, 0.2);
+        padding: 60px 20px 20px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        max-width: 1100px;
+        margin: 0 auto 40px;
+      }
+
+      .footer-section h4 {
+        font-size: 16px;
+        color: #18b046;
+        margin: 0 0 15px 0;
+      }
+
+      .footer-section p {
+        color: #777;
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      .footer-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .footer-section li {
+        margin-bottom: 8px;
+      }
+
+      .footer-section a {
+        color: #777;
+        text-decoration: none;
+        font-size: 13px;
+        transition: color 0.3s ease;
+      }
+
+      .footer-section a:hover {
+        color: #18b046;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(24, 176, 70, 0.1);
+        color: #555;
+        font-size: 12px;
+      }
+    </style>
   </footer>
 
 </body>

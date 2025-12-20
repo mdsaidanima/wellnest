@@ -61,19 +61,42 @@
 
         .nav-links {
             display: flex;
-            gap: 24px;
-            font-size: 14px;
+            gap: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .nav-links a {
-            color: #f4f4f4;
+            color: #e0e0e0;
             text-transform: uppercase;
             text-decoration: none;
-            transition: color 0.3s;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s ease;
         }
 
         .nav-links a:hover {
             color: #18b046;
+            text-shadow: 0 0 15px rgba(24, 176, 70, 0.9), 0 0 25px rgba(24, 176, 70, 0.5);
+        }
+
+        /* Animated underline */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #18b046;
+            transform: translateX(-50%);
+            transition: width 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+            box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
         }
 
         .nav-logout {
@@ -298,25 +321,107 @@
             color: #aaa;
         }
 
-        /* Sleep List */
-        .sleep-list ul {
-            list-style: none;
-        }
-
-        .sleep-list li {
-            font-size: 14px;
-            color: #ddd;
-            margin-bottom: 8px;
+        /* Sleep Summary UI */
+        .sleep-summary-container {
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .sleep-list li::before {
-            content: "•";
+        .sleep-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sleep-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .sleep-val {
+            font-weight: bold;
             color: #fff;
-            margin-right: 10px;
+        }
+
+        .sleep-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .sleep-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 1s ease;
+        }
+
+        .sleep-fill.excellent {
+            background: #18b046;
+            box-shadow: 0 0 10px rgba(24, 176, 70, 0.4);
+        }
+
+        .sleep-fill.good {
+            background: #ffc107;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+        }
+
+        .sleep-fill.fair {
+            background: #ff9800;
+        }
+
+        .sleep-fill.poor {
+            background: #f44336;
+        }
+
+        .sleep-status {
+            font-size: 11px;
+            color: #aaa;
+            text-align: right;
+            margin-top: 2px;
+        }
+
+        /* Health Insights & Warnings */
+        .insight-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 20px;
+            border-left: 3px solid #888;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .insight-box.warning {
+            border-left-color: #ffc107;
+            /* Yellow/Orange */
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .insight-box.suggestion {
+            border-left-color: #18b046;
+            /* Green */
+            background: rgba(24, 176, 70, 0.05);
+        }
+
+        .insight-icon {
             font-size: 18px;
-            line-height: 1;
+            padding-top: 2px;
+        }
+
+        .insight-text {
+            color: #ddd;
+        }
+
+        .insight-text b {
+            color: #fff;
         }
 
         /* Goals Section */
@@ -496,20 +601,70 @@
             <div class="info-panel">
                 <h3>Daily Water Intake</h3>
                 <div class="progress-track">
-                    <div class="progress-fill" style="width: 70%;"></div>
+                    <div class="progress-fill" style="width: 72%;"></div>
                 </div>
-                <p class="progress-label">1.8L / 2.5L</p>
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                    <p class="progress-label">1.8L / 2.5L</p>
+                    <p class="progress-label" style="color:#ffc107;">Moderate</p>
+                </div>
+
+                <!-- New Health Warning/Suggestion -->
+                <div class="insight-box warning">
+                    <span class="insight-icon">💧</span>
+                    <div class="insight-text">
+                        <strong>Hydration Alert:</strong> Try to reach <b>2.5L</b> for optimal hydration. Drink a glass
+                        now!
+                    </div>
+                </div>
             </div>
 
             <!-- Sleep -->
             <div class="info-panel">
                 <h3>Sleep Summary</h3>
-                <div class="sleep-list">
-                    <ul>
-                        <li>Mon: 7 hours</li>
-                        <li>Tue: 6 hours</li>
-                        <li>Wed: 8 hours</li>
-                    </ul>
+                <div class="sleep-summary-container">
+
+                    <!-- Item 1 -->
+                    <div class="sleep-item">
+                        <div class="sleep-header">
+                            <span class="sleep-day">Mon</span>
+                            <span class="sleep-val">7.5 hrs</span>
+                        </div>
+                        <div class="sleep-track">
+                            <div class="sleep-fill excellent" style="width: 90%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="sleep-item">
+                        <div class="sleep-header">
+                            <span class="sleep-day">Tue</span>
+                            <span class="sleep-val">6.0 hrs</span>
+                        </div>
+                        <div class="sleep-track">
+                            <div class="sleep-fill fair" style="width: 60%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="sleep-item">
+                        <div class="sleep-header">
+                            <span class="sleep-day">Wed</span>
+                            <span class="sleep-val">8.2 hrs</span>
+                        </div>
+                        <div class="sleep-track">
+                            <div class="sleep-fill excellent" style="width: 95%;"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- New Sleep Suggestion -->
+                <div class="insight-box suggestion">
+                    <span class="insight-icon">🛌</span>
+                    <div class="insight-text">
+                        <strong>Sleep Tip:</strong> Aim for <b>7–8 hours</b> of sleep daily for optimal recovery and
+                        focus.
+                    </div>
                 </div>
             </div>
         </div>

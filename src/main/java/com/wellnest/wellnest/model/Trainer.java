@@ -14,17 +14,19 @@ public class Trainer {
     private int experienceYears;
     private String bio;
     private String contactEmail;
+    private Integer age;
     private String imageUrl; // For profile picture placeholder
 
     public Trainer() {}
 
-    public Trainer(String name, String specialization, int experienceYears, String bio, String contactEmail, String imageUrl) {
+    public Trainer(String name, String specialization, int experienceYears, String bio, String contactEmail, String imageUrl, Integer age) {
         this.name = name;
         this.specialization = specialization;
         this.experienceYears = experienceYears;
         this.bio = bio;
         this.contactEmail = contactEmail;
         this.imageUrl = imageUrl;
+        this.age = age;
     }
 
     // Getters and Setters
@@ -49,4 +51,7 @@ public class Trainer {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
 }

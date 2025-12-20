@@ -1,14 +1,19 @@
 package com.wellnest.wellnest.controller;
 
 import com.wellnest.wellnest.model.User;
+import com.wellnest.wellnest.model.PasswordResetToken;
 import com.wellnest.wellnest.repository.UserRepository;
+import com.wellnest.wellnest.repository.PasswordResetTokenRepository;
+import com.wellnest.wellnest.service.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,9 +21,15 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final PasswordResetTokenRepository resetTokenRepository;
+    private final EmailService emailService;
 
-    public AuthController(UserRepository userRepository) {
+    public AuthController(UserRepository userRepository, 
+                         PasswordResetTokenRepository resetTokenRepository,
+                         EmailService emailService) {
         this.userRepository = userRepository;
+        this.resetTokenRepository = resetTokenRepository;
+        this.emailService = emailService;
     }
 
     // ---------------- REGISTER (used by signup.js) ----------------
@@ -121,6 +132,129 @@ public class AuthController {
         if (matchedUser.getGoal() != null) response.put("goal", matchedUser.getGoal());
         
         response.put("token", "demo-token");
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ---------------- FORGOT PASSWORD - Send OTP ----------------
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required");
+        }
+
+        // Check if user exists
+        List<User> allUsers = userRepository.findAll();
+        User user = allUsers.stream()
+                .filter(u -> email.equalsIgnoreCase(u.getEmail()))
+                .findFirst()
+                .orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No account found with this email");
+        }
+
+        // Generate 6-digit OTP
+        String otp = String.format("%06d", new Random().nextInt(999999));
+
+        // Create token with 10 minutes expiry
+        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(10);
+        PasswordResetToken resetToken = new PasswordResetToken(email, otp, expiryTime);
+        resetTokenRepository.save(resetToken);
+
+        // Send OTP via email
+        emailService.sendOtpEmail(email, otp);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "OTP sent to your email");
+        response.put("email", email);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ---------------- VERIFY OTP ----------------
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String otp = payload.get("otp");
+
+        if (email == null || otp == null) {
+            return ResponseEntity.badRequest().body("Email and OTP are required");
+        }
+
+        // Find valid token
+        PasswordResetToken token = resetTokenRepository
+                .findByEmailAndOtpAndUsedFalse(email, otp)
+                .orElse(null);
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid OTP");
+        }
+
+        if (token.isExpired()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("OTP has expired");
+        }
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "OTP verified successfully");
+        response.put("email", email);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ---------------- RESET PASSWORD ----------------
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String otp = payload.get("otp");
+        String newPassword = payload.get("newPassword");
+
+        if (email == null || otp == null || newPassword == null) {
+            return ResponseEntity.badRequest().body("Email, OTP, and new password are required");
+        }
+
+        // Find and validate token
+        PasswordResetToken token = resetTokenRepository
+                .findByEmailAndOtpAndUsedFalse(email, otp)
+                .orElse(null);
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid OTP");
+        }
+
+        if (token.isExpired()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("OTP has expired");
+        }
+
+        // Find user and update password
+        List<User> allUsers = userRepository.findAll();
+        User user = allUsers.stream()
+                .filter(u -> email.equalsIgnoreCase(u.getEmail()))
+                .findFirst()
+                .orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User not found");
+        }
+
+        // Update password
+        user.setPassword(newPassword);
+        userRepository.save(user);
+
+        // Mark token as used
+        token.setUsed(true);
+        resetTokenRepository.save(token);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Password reset successful");
 
         return ResponseEntity.ok(response);
     }

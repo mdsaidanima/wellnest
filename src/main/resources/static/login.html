@@ -60,18 +60,42 @@
 
         .nav-links {
             display: flex;
-            gap: 24px;
-            font-size: 14px;
+            gap: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .nav-links a {
-            color: #f4f4f4;
+            color: #e0e0e0;
             text-transform: uppercase;
             text-decoration: none;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s ease;
         }
 
         .nav-links a:hover {
             color: #18b046;
+            text-shadow: 0 0 10px rgba(24, 176, 70, 0.4);
+        }
+
+        /* Animated underline */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #18b046;
+            transform: translateX(-50%);
+            transition: width 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+            box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
         }
 
         /* Main Content */
@@ -206,6 +230,94 @@
             border-top: 1px solid rgba(24, 176, 70, 0.2);
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(24, 176, 70, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .modal h3 {
+            color: #18b046;
+            margin: 0 0 10px;
+            font-size: 24px;
+        }
+
+        .modal p {
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .modal .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: auto;
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+
+        .modal .close-btn:hover {
+            color: #18b046;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .step-indicator {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
         @media (max-width: 768px) {
             .card {
                 padding: 30px 20px;
@@ -245,7 +357,7 @@
                 <label>Password</label>
                 <input type="password" id="password" placeholder="Enter your password" required>
 
-                <a href="#" class="forgot">Forgot Password?</a>
+                <a href="#" class="forgot" onclick="openForgotPasswordModal(); return false;">Forgot Password?</a>
 
                 <button type="button" onclick="login()">Login</button>
             </form>
@@ -256,11 +368,66 @@
         </div>
     </div>
 
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotPasswordModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeForgotPasswordModal()">&times;</button>
+
+            <!-- Step 1: Enter Email -->
+            <div id="step1" class="modal-step">
+                <h3>Forgot Password</h3>
+                <p class="step-indicator">Step 1 of 3</p>
+                <p>Enter your email address and we'll send you an OTP to reset your password.</p>
+
+                <label>Email</label>
+                <input type="email" id="resetEmail" placeholder="Enter your email" required>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeForgotPasswordModal()">Cancel</button>
+                    <button type="button" onclick="sendOtp()">Send OTP</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Enter OTP -->
+            <div id="step2" class="modal-step" style="display: none;">
+                <h3>Verify OTP</h3>
+                <p class="step-indicator">Step 2 of 3</p>
+                <p>Enter the 6-digit OTP sent to <strong id="displayEmail"></strong></p>
+
+                <label>OTP Code</label>
+                <input type="text" id="otpCode" placeholder="Enter 6-digit OTP" maxlength="6" required>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="backToStep1()">Back</button>
+                    <button type="button" onclick="verifyOtp()">Verify OTP</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Reset Password -->
+            <div id="step3" class="modal-step" style="display: none;">
+                <h3>Reset Password</h3>
+                <p class="step-indicator">Step 3 of 3</p>
+                <p>Enter your new password</p>
+
+                <label>New Password</label>
+                <input type="password" id="newPassword" placeholder="Enter new password" required>
+
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="backToStep2()">Back</button>
+                    <button type="button" onclick="resetPassword()">Reset Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>© 2025 WellNest – Smart Health & Fitness Companion</p>
     </footer>
 
-    <script src="login.js?v=1.1"></script>
+    <script src="login.js?v=2.0"></script>
 </body>
 
 </html>
