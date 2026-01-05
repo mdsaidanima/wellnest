@@ -1,13 +1,61 @@
 const API_BASE_URL = 'http://localhost:8080/api';
 
+// Toggle Role Function
+window.setRole = function (role) {
+    console.log("setRole called with:", role);
+    const roleInput = document.getElementById('signupRole');
+    if (roleInput) roleInput.value = role;
+
+    const btnUser = document.getElementById('btnUser');
+    const btnTrainer = document.getElementById('btnTrainer');
+    const userFields = document.getElementById('userFields');
+    const trainerFields = document.getElementById('trainerFields');
+
+    // Inputs
+    const inputAge = document.getElementById('signupAge');
+    const inputWeight = document.getElementById('signupWeight');
+    const inputExp = document.getElementById('signupExperience');
+
+    if (role === 'USER') {
+        if (btnUser) btnUser.classList.add('active');
+        if (btnTrainer) btnTrainer.classList.remove('active');
+
+        if (userFields) userFields.classList.remove('hidden');
+        if (trainerFields) trainerFields.classList.add('hidden');
+
+        // Toggle Required
+        if (inputAge) inputAge.setAttribute('required', 'true');
+        if (inputWeight) inputWeight.setAttribute('required', 'true');
+        if (inputExp) inputExp.removeAttribute('required');
+
+    } else {
+        if (btnTrainer) btnTrainer.classList.add('active');
+        if (btnUser) btnUser.classList.remove('active');
+
+        if (trainerFields) trainerFields.classList.remove('hidden');
+        if (userFields) userFields.classList.add('hidden');
+
+        // Toggle Required
+        if (inputAge) inputAge.removeAttribute('required');
+        if (inputWeight) inputWeight.removeAttribute('required');
+        if (inputExp) inputExp.setAttribute('required', 'true');
+    }
+};
+
 async function signup() {
     const fullName = document.getElementById("signupFullName").value;
     const email = document.getElementById("signupEmail").value;
     const password = document.getElementById("signupPassword").value;
     const role = document.getElementById("signupRole").value;
+
+    // User fields
     const age = document.getElementById("signupAge").value;
     const weight = document.getElementById("signupWeight").value;
     const goal = document.getElementById("signupGoal").value;
+
+    // Trainer fields
+    const experience = document.getElementById("signupExperience").value;
+    const specialization = document.getElementById("signupSpecialization").value;
 
     if (!email || !password) {
         alert("Email and password are required");
@@ -20,9 +68,13 @@ async function signup() {
             email: email,
             password: password,
             role: role,
-            age: age ? Number(age) : null,
-            weight: weight ? Number(weight) : null,
-            goal: goal || null
+            // Send user fields only if USER
+            age: (role === 'USER' && age) ? Number(age) : null,
+            weight: (role === 'USER' && weight) ? Number(weight) : null,
+            goal: (role === 'USER' && goal) ? goal : null,
+            // Send trainer fields only if TRAINER
+            experience: (role === 'TRAINER' && experience) ? Number(experience) : null,
+            specialization: (role === 'TRAINER' && specialization) ? specialization : null
         };
         console.log("Sending Register Payload:", payload);
 
@@ -74,9 +126,14 @@ async function signup() {
         localStorage.setItem('age', age || "");
         localStorage.setItem('weight', weight || "");
         localStorage.setItem('goal', goal || "");
+        if (loginData.trainerId) localStorage.setItem('trainerId', loginData.trainerId);
 
         alert("Account created successfully! Redirecting to dashboard...");
-        window.location.href = "dashboard.html";
+        if (role === 'TRAINER') {
+            window.location.href = "trainer-dashboard.html";
+        } else {
+            window.location.href = "dashboard.html";
+        }
 
     } catch (error) {
         console.error("Error during signup:", error);

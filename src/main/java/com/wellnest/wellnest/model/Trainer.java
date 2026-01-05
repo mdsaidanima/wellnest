@@ -16,6 +16,7 @@ public class Trainer {
     private String contactEmail;
     private Integer age;
     private String imageUrl; // For profile picture placeholder
+    private Long userId; // Linked User account ID
 
     public Trainer() {}
 
@@ -27,6 +28,11 @@ public class Trainer {
         this.contactEmail = contactEmail;
         this.imageUrl = imageUrl;
         this.age = age;
+    }
+
+    public Trainer(String name, String specialization, int experienceYears, String bio, String contactEmail, String imageUrl, Integer age, Long userId) {
+        this(name, specialization, experienceYears, bio, contactEmail, imageUrl, age);
+        this.userId = userId;
     }
 
     // Getters and Setters
@@ -54,4 +60,7 @@ public class Trainer {
 
     public Integer getAge() { return age; }
     public void setAge(Integer age) { this.age = age; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 }

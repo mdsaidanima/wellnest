@@ -120,6 +120,36 @@
       background: linear-gradient(135deg, #1abd4b 0%, #18b046 100%);
     }
 
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 101;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background: #18b046;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
     /* ---------- HERO SECTION ---------- */
 
     .hero {
@@ -220,10 +250,45 @@
 
     /* ---------- RESPONSIVE ---------- */
 
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+
       .nav-links {
         display: none;
-        /* simple: hide on very small screens */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        gap: 20px;
+        border-bottom: 1px solid rgba(24, 176, 70, 0.2);
+        text-align: center;
+        animation: slideDown 0.3s ease forwards;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .call-btn {
+        display: none;
       }
 
       .hero-title {
@@ -260,16 +325,23 @@
       <div class="logo-badge">WELLNEST</div>
 
       <!-- Center: nav links -->
-      <nav class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="about.html">About Us</a>
-
-        <a href="login.html">Login</a>
-        <a href="signup.html">Sign up</a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" id="navHome">Home</a>
+        <a href="about.html" id="navAbout">About Us</a>
+        <a href="dashboard.html" id="navDashboard" style="display: none;">Dashboard</a>
+        <a href="login.html" id="navLogin">Login</a>
+        <a href="signup.html" id="navSignup">Sign up</a>
+        <a class="nav-logout" id="logoutBtn" style="display: none; cursor: pointer;">Logout</a>
       </nav>
 
       <!-- Right: call button -->
       <button class="call-btn">CALL: +91 99999 99999</button>
+
+      <div class="hamburger" id="hamburgerMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </div>
   </header>
 
@@ -765,6 +837,47 @@
     </style>
   </footer>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const hamburger = document.getElementById('hamburgerMenu');
+      const navLinks = document.getElementById('navLinks');
+      if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+          hamburger.classList.toggle('active');
+          navLinks.classList.toggle('active');
+        });
+      }
+
+      const userEmail = localStorage.getItem('userEmail');
+      const role = localStorage.getItem('role');
+
+      if (userEmail) {
+        // Hide public links
+        if (document.getElementById('navHome')) document.getElementById('navHome').style.display = 'none';
+        if (document.getElementById('navAbout')) document.getElementById('navAbout').style.display = 'none';
+        if (document.getElementById('navLogin')) document.getElementById('navLogin').style.display = 'none';
+        if (document.getElementById('navSignup')) document.getElementById('navSignup').style.display = 'none';
+
+        // Show private links
+        const dashLink = document.getElementById('navDashboard');
+        if (dashLink) {
+          dashLink.style.display = 'inline-block';
+          if (role === 'TRAINER') {
+            dashLink.href = 'trainer-dashboard.html';
+          }
+        }
+        if (document.getElementById('logoutBtn')) document.getElementById('logoutBtn').style.display = 'inline-block';
+      }
+    });
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        localStorage.clear();
+        window.location.reload();
+      });
+    }
+  </script>
 </body>
 
 </html>

@@ -1,8 +1,10 @@
 package com.wellnest.wellnest.controller;
 
 import com.wellnest.wellnest.model.User;
+import com.wellnest.wellnest.model.Trainer;
 import com.wellnest.wellnest.model.PasswordResetToken;
 import com.wellnest.wellnest.repository.UserRepository;
+import com.wellnest.wellnest.repository.TrainerRepository;
 import com.wellnest.wellnest.repository.PasswordResetTokenRepository;
 import com.wellnest.wellnest.service.EmailService;
 import org.springframework.http.HttpStatus;
@@ -21,13 +23,16 @@ import java.util.Random;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final TrainerRepository trainerRepository;
     private final PasswordResetTokenRepository resetTokenRepository;
     private final EmailService emailService;
 
     public AuthController(UserRepository userRepository, 
+                         TrainerRepository trainerRepository,
                          PasswordResetTokenRepository resetTokenRepository,
                          EmailService emailService) {
         this.userRepository = userRepository;
+        this.trainerRepository = trainerRepository;
         this.resetTokenRepository = resetTokenRepository;
         this.emailService = emailService;
     }
@@ -87,6 +92,32 @@ public class AuthController {
 
         userRepository.save(user);
 
+        // If Role is TRAINER, save to Trainer repository as well
+        if ("TRAINER".equalsIgnoreCase(role)) {
+            try {
+                Trainer trainer = new Trainer();
+                trainer.setName(fullName);
+                trainer.setContactEmail(email);
+                
+                if (payload.get("experience") != null) {
+                    trainer.setExperienceYears((int) Double.parseDouble(payload.get("experience").toString()));
+                }
+                if (payload.get("specialization") != null) {
+                    trainer.setSpecialization(payload.get("specialization").toString());
+                }
+                
+                // Set default image or other fields if needed
+                trainer.setBio("Certified Trainer specialized in " + trainer.getSpecialization());
+                
+                trainerRepository.save(trainer);
+                System.out.println("Trainer profile created for: " + email);
+            } catch (Exception e) {
+                System.out.println("Error creating trainer profile: " + e.getMessage());
+                // We don't fail the whole registration if trainer profile fails, or maybe we should?
+                // For now, let's log it.
+            }
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("userId", user.getId());
         response.put("role", user.getRole());
@@ -130,6 +161,7 @@ public class AuthController {
         if (matchedUser.getAge() != null) response.put("age", matchedUser.getAge());
         if (matchedUser.getWeight() != null) response.put("weight", matchedUser.getWeight());
         if (matchedUser.getGoal() != null) response.put("goal", matchedUser.getGoal());
+        if (matchedUser.getTrainerId() != null) response.put("trainerId", matchedUser.getTrainerId());
         
         response.put("token", "demo-token");
 

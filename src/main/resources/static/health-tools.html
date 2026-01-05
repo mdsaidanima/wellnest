@@ -104,6 +104,74 @@
             cursor: pointer;
         }
 
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #18b046;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 30px;
+                gap: 20px;
+                border-bottom: 1px solid rgba(24, 176, 70, 0.2);
+                text-align: center;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
         /* Container */
         .dashboard-container {
             max-width: 1200px;
@@ -141,7 +209,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 30px;
-            border-radius: 12px;
+            border-radius: 20px;
             flex: 1 1 450px;
             max-width: 550px;
             display: flex;
@@ -380,7 +448,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             margin-top: 40px;
             padding: 30px;
-            border-radius: 12px;
+            border-radius: 20px;
         }
 
         .full-width-header {
@@ -419,9 +487,10 @@
     <header class="header">
         <div class="nav-container">
             <div class="logo-badge">WELLNEST</div>
-            <nav class="nav-links">
-                <a href="index.html">HOME</a>
-                <a href="dashboard.html">DASHBOARD</a>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html" id="navHome">HOME</a>
+                <a href="about.html" id="navAbout">ABOUT US</a>
+                <a href="dashboard.html" id="navDashboard">DASHBOARD</a>
                 <a href="tracker.html">TRACKER</a>
                 <a href="health-tools.html" class="active">HEALTH TOOLS</a>
                 <a href="blog.html">BLOG</a>
@@ -429,6 +498,11 @@
                 <a href="profile.html">PROFILE</a>
                 <a class="nav-logout" id="logoutBtn">LOGOUT</a>
             </nav>
+            <div class="hamburger" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 
@@ -538,6 +612,24 @@
 
     <script src="health-tools.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.getElementById('hamburgerMenu');
+            const navLinks = document.getElementById('navLinks');
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', () => {
+                    hamburger.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                });
+            }
+
+            // Hide Home and About Us if logged in
+            const userEmailCheck = localStorage.getItem('userEmail');
+            if (userEmailCheck) {
+                if (document.getElementById('navHome')) document.getElementById('navHome').style.display = 'none';
+                if (document.getElementById('navAbout')) document.getElementById('navAbout').style.display = 'none';
+            }
+        });
+
         document.getElementById('logoutBtn').addEventListener('click', () => {
             localStorage.clear();
             window.location.href = 'index.html';
@@ -547,6 +639,10 @@
         const userEmail = localStorage.getItem('userEmail');
         if (!userEmail) {
             window.location.href = 'login.html';
+        } else {
+            // Hide Home and About Us if logged in
+            if (document.getElementById('navHome')) document.getElementById('navHome').style.display = 'none';
+            if (document.getElementById('navAbout')) document.getElementById('navAbout').style.display = 'none';
         }
     </script>
 </body>

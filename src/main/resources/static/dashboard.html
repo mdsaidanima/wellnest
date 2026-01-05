@@ -103,6 +103,37 @@
             cursor: pointer;
         }
 
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #18b046;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        /* Open state for hamburger */
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
         /* Dashboard Container */
         .dashboard-container {
             max-width: 1200px;
@@ -145,7 +176,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 25px;
-            border-radius: 12px;
+            border-radius: 20px;
             flex: 1 1 300px;
             min-width: 300px;
             display: flex;
@@ -192,13 +223,14 @@
         .user-badge {
             display: inline-block;
             margin-top: 15px;
-            padding: 4px 12px;
+            padding: 6px 16px;
             background: rgba(24, 176, 70, 0.2);
             color: #18b046;
             font-size: 11px;
-            border-radius: 4px;
+            border-radius: 99px;
             text-transform: uppercase;
             font-weight: bold;
+            border: 1px solid rgba(24, 176, 70, 0.3);
         }
 
         .card-desc {
@@ -484,6 +516,42 @@
         }
 
         @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 30px;
+                gap: 20px;
+                border-bottom: 1px solid rgba(24, 176, 70, 0.2);
+                text-align: center;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
             .cards-row {
                 flex-direction: column;
             }
@@ -498,6 +566,135 @@
                 text-align: center;
             }
         }
+
+        /* Plan Item Styles */
+        .plan-entry {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .plan-entry:hover {
+            border-color: #18b046;
+            background: rgba(24, 176, 70, 0.02);
+        }
+
+        .plan-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .plan-meta {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .plan-exercises {
+            font-size: 12px;
+            color: #aaa;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        /* Chat Modal Styles */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: #111;
+            border: 1px solid #18b046;
+            border-radius: 12px;
+            z-index: 1000;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #18b046;
+            padding: 15px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h4 {
+            font-size: 14px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #0a0a0a;
+        }
+
+        .chat-msg {
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .chat-msg.sent {
+            align-self: flex-end;
+            background: rgba(24, 176, 70, 0.2);
+            color: #fff;
+            border: 1px solid #18b046;
+        }
+
+        .chat-msg.received {
+            align-self: flex-start;
+            background: #222;
+            color: #eee;
+            border: 1px solid #333;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .chat-send-btn {
+            background: #18b046;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -507,9 +704,10 @@
     <header class="header">
         <div class="nav-container">
             <div class="logo-badge">WELLNEST</div>
-            <nav class="nav-links">
-                <a href="index.html">HOME</a>
-                <a href="about.html">ABOUT US</a>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html" id="navHome">HOME</a>
+                <a href="about.html" id="navAbout">ABOUT US</a>
+                <a href="dashboard.html" id="navDashboard" style="display: none;">DASHBOARD</a>
                 <a href="tracker.html">TRACKER</a>
                 <a href="health-tools.html">HEALTH TOOLS</a>
                 <a href="blog.html">BLOG</a>
@@ -517,6 +715,11 @@
                 <a href="profile.html">PROFILE</a>
                 <a class="nav-logout" id="logoutBtn">LOGOUT</a>
             </nav>
+            <div class="hamburger" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 
@@ -552,7 +755,7 @@
                         <span class="stat-value" id="caloriesText">2,150</span>
                     </div>
                 </div>
-                <div class="user-badge" id="roleBadge">USER</div>
+                <div class="user-badge" id="roleBadge">ELITE USER</div>
                 <p style="margin-top: 15px; font-size: 12px; color: #666;">Tip: make sure your profile details are
                     updated to get more accurate analytics.</p>
             </div>
@@ -576,6 +779,57 @@
                     <a href="health-tools.html" class="action-btn">OPEN HEALTH TOOLS</a>
                     <a href="health-tools.html" class="secondary-btn">Jump to BMI Calculator</a>
                 </div>
+            </div>
+
+            <!-- My Trainer (Dynamic) -->
+            <div class="card" id="trainerCard" style="display: none;">
+                <h3>My Trainer</h3>
+                <div class="card-content" id="trainerContent">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <img id="trainerImg" src=""
+                            style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 2px solid #18b046;">
+                        <div>
+                            <span id="trainerNameDisplay" style="font-weight: bold; display: block;">Trainer Name</span>
+                            <span id="trainerSpecDisplay" style="font-size: 12px; color: #18b046;">Specialization</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons-row">
+                    <button class="secondary-btn" id="chatBtn"
+                        style="border:1px solid #18b046; padding: 10px 20px; border-radius: 99px; background:transparent; color:#18b046; font-size:12px; font-weight:bold; cursor:pointer;">CHAT
+                        WITH COACH</button>
+                </div>
+            </div>
+
+            <!-- My Workout Plans (Dynamic) -->
+            <div class="card" id="plansCard" style="display: none;">
+                <h3>Assigned Plans</h3>
+                <div id="plansList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                    <p style="font-size: 12px; color: #666; text-align: center;">No plans assigned yet.</p>
+                </div>
+            </div>
+
+            <!-- My Meal Plans (Dynamic) -->
+            <div class="card" id="mealPlansCard" style="display: none;">
+                <h3>Nutrition & Diet</h3>
+                <div id="mealPlansList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                    <p style="font-size: 12px; color: #666; text-align: center;">No diet plans yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Modal -->
+        <div class="chat-modal" id="chatModal">
+            <div class="chat-header">
+                <h4 id="chatTitle">Chat with Coach</h4>
+                <span onclick="toggleChat()" style="cursor:pointer; font-size:18px;">&times;</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will appear here -->
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
+                <button class="chat-send-btn" onclick="sendChatMessage()">SEND</button>
             </div>
         </div>
 
@@ -702,7 +956,7 @@
         <p>© 2025 WellNest – Smart Health & Fitness Companion</p>
     </footer>
 
-    <script src="dashboard.js?v=1.1"></script>
+    <script src="dashboard.js?v=2"></script>
 </body>
 
 </html>

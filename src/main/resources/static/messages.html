@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Messages - WellNest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #000;
+            background: radial-gradient(circle at top, #0f3d1e 0%, #000000 85%);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header / Nav */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            border-bottom: 1px solid rgba(24, 176, 70, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-badge {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(24, 176, 70, 0.1);
+            border: 1px solid #18b046;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #18b046;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a {
+            color: #e0e0e0;
+            text-transform: uppercase;
+            text-decoration: none;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #18b046;
+            text-shadow: 0 0 15px rgba(24, 176, 70, 0.9), 0 0 25px rgba(24, 176, 70, 0.5);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #18b046;
+            transform: translateX(-50%);
+            transition: width 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+            box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
+        }
+
+        /* Main Content */
+        .messages-container {
+            max-width: 1200px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            height: calc(100vh - 160px);
+        }
+
+        /* Sidebar: Contacts */
+        .contacts-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(24, 176, 70, 0.05);
+        }
+
+        .panel-header h3 {
+            color: #18b046;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        .contacts-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .contact-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .contact-item.active {
+            background: rgba(24, 176, 70, 0.1);
+            border-left: 4px solid #18b046;
+        }
+
+        .contact-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .contact-last-msg {
+            font-size: 12px;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        /* Chat Window */
+        .chat-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 15px 25px;
+            background: rgba(24, 176, 70, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header h4 {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message-bubble {
+            max-width: 60%;
+            padding: 12px 18px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message-bubble.sent {
+            align-self: flex-end;
+            background: #18b046;
+            color: #000;
+            font-weight: 500;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 4px 15px rgba(24, 176, 70, 0.2);
+        }
+
+        .message-bubble.received {
+            align-self: flex-start;
+            background: #222;
+            color: #eee;
+            border: 1px solid #333;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message-time {
+            font-size: 10px;
+            margin-top: 5px;
+            opacity: 0.7;
+            display: block;
+            text-align: right;
+        }
+
+        .chat-input-area {
+            padding: 20px 25px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 15px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 12px 25px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #18b046;
+            background: rgba(24, 176, 70, 0.05);
+        }
+
+        .send-btn {
+            background: #18b046;
+            color: #000;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(24, 176, 70, 0.3);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(24, 176, 70, 0.5);
+        }
+
+        .empty-chat-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .empty-chat-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #18b046;
+            opacity: 0.3;
+        }
+
+        /* Customize Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(24, 176, 70, 0.2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(24, 176, 70, 0.4);
+        }
+
+        @media (max-width: 900px) {
+            .messages-container {
+                grid-template-columns: 1fr;
+            }
+
+            .contacts-panel {
+                display: none;
+                /* Hide sidebar on mobile for now */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo-badge">WELLNEST</div>
+            <nav class="nav-links">
+                <a href="trainer-dashboard.html">DASHBOARD</a>
+                <a href="blog.html">BLOGS</a>
+                <a href="messages.html" class="active">MESSAGES</a>
+                <a class="nav-logout" onclick="logout()">LOGOUT</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="messages-container">
+        <!-- Sidebar -->
+        <div class="contacts-panel">
+            <div class="panel-header">
+                <h3>Chats</h3>
+            </div>
+            <div class="contacts-list" id="contactsList">
+                <!-- Contacts will be populated by JS -->
+                <div style="text-align: center; padding: 40px; color: #666;">Loading contacts...</div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-panel" id="chatPanel">
+            <div class="empty-chat-state" id="emptyState">
+                <div style="font-size: 50px; margin-bottom: 15px;">💬</div>
+                <h3>Select a conversation</h3>
+                <p>Choose a client from the left to start messaging.</p>
+            </div>
+
+            <div id="activeChat" style="display: none; flex-direction: column; height: 100%;">
+                <div class="chat-header">
+                    <div class="contact-avatar" id="activeContactAvatar">?</div>
+                    <div>
+                        <h4 id="activeContactName">Client Name</h4>
+                        <span style="font-size: 12px; color: #18b046;">Online</span>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will appear here -->
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Type your message here...">
+                    <button class="send-btn" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="messages.js"></script>
+    <script>
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        }
+    </script>
+</body>
+
+</html>

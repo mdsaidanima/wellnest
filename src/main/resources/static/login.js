@@ -42,12 +42,18 @@ async function login() {
     if (data.age) localStorage.setItem('age', data.age);
     if (data.weight) localStorage.setItem('weight', data.weight);
     if (data.goal) localStorage.setItem('goal', data.goal);
+    if (data.trainerId) localStorage.setItem('trainerId', data.trainerId);
 
     localStorage.setItem('userEmail', email);
 
     console.log("Login successful:", data);
     alert("Login successful! Redirecting to dashboard...");
-    window.location.href = "dashboard.html";
+
+    if (data.role === 'TRAINER') {
+      window.location.href = "trainer-dashboard.html";
+    } else {
+      window.location.href = "dashboard.html";
+    }
 
   } catch (error) {
     console.error("Error during login:", error);

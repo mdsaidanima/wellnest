@@ -24,6 +24,9 @@ public class User {
     private Double weight;
     private String goal;
 
+    private Long trainerId; // ID of the assigned trainer
+    private Long pendingTrainerId; // ID of the trainer waiting for approval
+
     public User() {
     }
 
@@ -91,5 +94,21 @@ public class User {
 
     public void setGoal(String goal) {
         this.goal = goal;
+    }
+
+    public Long getTrainerId() {
+        return trainerId;
+    }
+
+    public void setTrainerId(Long trainerId) {
+        this.trainerId = trainerId;
+    }
+
+    public Long getPendingTrainerId() {
+        return pendingTrainerId;
+    }
+
+    public void setPendingTrainerId(Long pendingTrainerId) {
+        this.pendingTrainerId = pendingTrainerId;
     }
 }

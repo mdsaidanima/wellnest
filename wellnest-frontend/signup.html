@@ -158,6 +158,39 @@
             transition: background 0.3s;
         }
 
+        button.toggle-btn {
+            background: transparent;
+            color: #aaa;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            flex: 1;
+            border-radius: 99px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button.toggle-btn.active {
+            background: #18b046;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(24, 176, 70, 0.4);
+        }
+
+        .role-toggle-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 99px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
         button:hover {
             background: #14932a;
         }
@@ -210,7 +243,11 @@
 
     <div class="container">
         <div class="card">
-            <h2>Create Account</h2>
+            <!-- Role Toggle -->
+            <div class="role-toggle-container">
+                <button type="button" class="toggle-btn active" id="btnUser" onclick="setRole('USER')">User</button>
+                <button type="button" class="toggle-btn" id="btnTrainer" onclick="setRole('TRAINER')">Trainer</button>
+            </div>
 
             <form id="signupForm">
                 <label>Full Name</label>
@@ -261,25 +298,44 @@
                 </div>
                 <div id="passwordMatch" style="font-size: 11px; margin-top: 5px; color: #777;"></div>
 
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex: 1;">
-                        <label>Age</label>
-                        <input type="number" id="signupAge" placeholder="25" required>
+                <!-- USER FIELDS -->
+                <div id="userFields">
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 1;">
+                            <label>Age</label>
+                            <input type="number" id="signupAge" placeholder="25">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="signupWeight" placeholder="70">
+                        </div>
                     </div>
-                    <div style="flex: 1;">
-                        <label>Weight (kg)</label>
-                        <input type="number" id="signupWeight" placeholder="70" required>
-                    </div>
+
+                    <label>Fitness Goal</label>
+                    <select id="signupGoal">
+                        <option value="Lose Weight">Lose Weight</option>
+                        <option value="Build Muscle">Build Muscle</option>
+                        <option value="Stay Fit">Stay Fit</option>
+                        <option value="Endurance">Endurance</option>
+                        <option value="Flexibility">Flexibility</option>
+                    </select>
                 </div>
 
-                <label>Fitness Goal</label>
-                <select id="signupGoal">
-                    <option value="Lose Weight">Lose Weight</option>
-                    <option value="Build Muscle">Build Muscle</option>
-                    <option value="Stay Fit">Stay Fit</option>
-                    <option value="Endurance">Endurance</option>
-                    <option value="Flexibility">Flexibility</option>
-                </select>
+                <!-- TRAINER FIELDS -->
+                <div id="trainerFields" class="hidden">
+                    <label>Experience (Years)</label>
+                    <input type="number" id="signupExperience" placeholder="e.g. 5">
+
+                    <label>Specialization</label>
+                    <select id="signupSpecialization">
+                        <option value="General Fitness">General Fitness</option>
+                        <option value="Bodybuilding">Bodybuilding</option>
+                        <option value="Weight Loss">Weight Loss</option>
+                        <option value="Yoga">Yoga</option>
+                        <option value="Rehabilitation">Rehabilitation</option>
+                        <option value="Strength Training">Strength Training</option>
+                    </select>
+                </div>
 
                 <!-- Hidden role (default USER) -->
                 <input type="hidden" id="signupRole" value="USER">
@@ -296,7 +352,7 @@
         <p>© 2025 WellNest – Smart Health & Fitness Companion</p>
     </footer>
 
-    <script src="signup.js?v=1.3"></script>
+    <script src="signup.js?v=1.4"></script>
 </body>
 
 </html>
