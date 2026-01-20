@@ -2,6 +2,7 @@ package com.wellnest.wellnest.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "water_sleep_logs")
@@ -14,6 +15,7 @@ public class WaterSleepLog {
     private Long userId;
 
     private LocalDate logDate;
+    private LocalTime logTime;
 
     private Double waterIntakeLiters;  // e.g. 2.5
     private Double sleepHours;         // e.g. 7.0
@@ -30,6 +32,9 @@ public class WaterSleepLog {
 
     public LocalDate getLogDate() { return logDate; }
     public void setLogDate(LocalDate logDate) { this.logDate = logDate; }
+
+    public LocalTime getLogTime() { return logTime; }
+    public void setLogTime(LocalTime logTime) { this.logTime = logTime; }
 
     public Double getWaterIntakeLiters() { return waterIntakeLiters; }
     public void setWaterIntakeLiters(Double waterIntakeLiters) { this.waterIntakeLiters = waterIntakeLiters; }

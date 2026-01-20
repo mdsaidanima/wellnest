@@ -173,7 +173,7 @@
 
         /* Blog Container */
         .blog-container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 100px auto 40px;
             padding: 0 20px;
             flex: 1;
@@ -250,47 +250,28 @@
             background: #18b046;
         }
 
-        /* Grid Layout for Posts */
-        #postsList {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
         /* Post Card */
         .post-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            margin-bottom: 0;
-            /* Grid handles spacing */
-            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            height: 100%;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s, border-color 0.3s;
         }
 
         .post-card:hover {
             border-color: #18b046;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .post-cover-img {
             width: 100%;
             height: 200px;
             object-fit: cover;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: block;
-            /* Always take space if rendered */
-        }
-
-        .post-content-wrap {
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            /* Hidden by default if no image */
         }
 
         .post-meta {
@@ -303,9 +284,9 @@
         }
 
         .post-avatar {
-            width: 32px;
-            height: 32px;
-            background: #222;
+            width: 30px;
+            height: 30px;
+            background: #333;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -313,17 +294,11 @@
             color: #fff;
             font-weight: bold;
             border: 1px solid #18b046;
-            font-size: 12px;
-            flex-shrink: 0;
         }
 
         .post-author {
             color: #fff;
             font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100px;
         }
 
         .post-category {
@@ -331,69 +306,45 @@
             color: #18b046;
             padding: 2px 8px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 11px;
             text-transform: uppercase;
-            font-weight: bold;
-            margin-left: auto;
-            /* Push to right */
         }
 
         .post-title {
-            font-size: 18px;
-            margin-bottom: 12px;
+            font-size: 20px;
+            margin-bottom: 15px;
             color: #fff;
-            line-height: 1.4;
-            font-weight: bold;
         }
 
         .post-excerpt {
-            color: #ccc;
-            font-size: 14px;
+            color: #ddd;
+            font-size: 15px;
             line-height: 1.6;
             margin-bottom: 20px;
-            flex: 1;
-            /* Push footer down */
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: pre-wrap;
+            /* Preserve newlines */
         }
 
         .post-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding-top: 15px;
-            margin-top: auto;
         }
 
         .action-item {
             color: #aaa;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-weight: 600;
+            gap: 6px;
+            transition: color 0.3s;
         }
 
-        .action-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-
+        .action-item:hover,
         .action-item.liked {
-            color: #ff4d4d;
-        }
-
-        .action-item span {
-            font-size: 18px;
+            color: #18b046;
         }
 
         /* Modal */
@@ -564,7 +515,6 @@
             <div class="logo-badge">WELLNEST</div>
             <nav class="nav-links" id="navLinks">
                 <a href="index.html" id="navHome">HOME</a>
-                <a href="about.html" id="navAbout">ABOUT US</a>
                 <a href="dashboard.html" id="navDashboard">DASHBOARD</a>
                 <a href="tracker.html" id="navTracker">TRACKER</a>
                 <a href="health-tools.html" id="navHealth">HEALTH TOOLS</a>
@@ -667,10 +617,6 @@
 
         if (!userEmail) {
             window.location.href = 'login.html';
-        } else {
-            // Hide Home and About Us if logged in
-            if (document.getElementById('navHome')) document.getElementById('navHome').style.display = 'none';
-            if (document.getElementById('navAbout')) document.getElementById('navAbout').style.display = 'none';
         }
 
         // Role-based navigation adjustment

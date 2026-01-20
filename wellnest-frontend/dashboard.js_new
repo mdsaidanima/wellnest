@@ -1,0 +1,77 @@
+// dashboard.js - Fully functional dashboard with real data fetching
+
+const API_BASE_URL = "http://localhost:8080/api";
+const TRACKER_API = "http://localhost:8080/api/tracker";
+
+let trainerUserId = null;
+let chatInterval = null;
+let currentPeriod = 'today';
+
+document.addEventListener("DOMContentLoaded", () => {
+    initDashboard();
+});
+
+async function initDashboard() {
+    const userId = localStorage.getItem("userId");
+    const userEmail = localStorage.getItem("userEmail");
+
+    if (!userId || !userEmail) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Bind Chat Button immediately so it's active while data loads
+    const chatBtn = document.getElementById("chatBtn");
+    if (chatBtn) {
+        chatBtn.onclick = function () {
+            console.log("Chat button clicked!");
+            toggleChat();
+        };
+    }
+
+    // 1. Fetch User Profile for Name
+    await fetchUserProfile(userEmail);
+
+    // 2. Load Analytics Data (with real data from tracker)
+    await loadAnalyticsData(currentPeriod);
+
+    // 3. Dynamic Side Info (Trainer, Plans, Meals)
+    await fetchTrainerInfo();
+    await fetchUserPlans(userId);
+    await fetchUserMealPlans(userId);
+
+    // 4. Tab Listeners for Today/Week/Month/Custom
+    setupTabListeners();
+
+    // 5. Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "index.html";
+        });
+    }
+}
+
+function setupTabListeners() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all buttons
+            tabBtns.forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'transparent';
+                b.style.color = '#aaa';
+            });
+
+            // Add active class to clicked button
+            btn.classList.add('active');
+            btn.style.background = '#18b046';
+            btn.style.color = '#000';
+
+            // Update current period and reload data
+            currentPeriod = btn.getAttribute('data-period');
+            loadAnalyticsData(currentPeriod);
+        });
+    });
+}

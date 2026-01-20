@@ -98,6 +98,36 @@
             box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
         }
 
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #18b046;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
         /* Main Content */
         .messages-container {
             max-width: 1200px;
@@ -114,7 +144,7 @@
         .contacts-panel {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -159,7 +189,7 @@
         .contact-avatar {
             width: 45px;
             height: 45px;
-            border-radius: 50%;
+            border-radius: 12px;
             background: #333;
             display: flex;
             align-items: center;
@@ -193,7 +223,7 @@
         .chat-panel {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -340,13 +370,60 @@
         }
 
         @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 30px;
+                gap: 20px;
+                border-bottom: 1px solid rgba(24, 176, 70, 0.2);
+                text-align: center;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
             .messages-container {
                 grid-template-columns: 1fr;
+                margin-top: 80px;
+                height: calc(100vh - 100px);
             }
 
             .contacts-panel {
                 display: none;
-                /* Hide sidebar on mobile for now */
+            }
+
+            .contacts-panel.show-mobile {
+                display: flex;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 10;
             }
         }
     </style>
@@ -357,23 +434,27 @@
     <header class="header">
         <div class="nav-container">
             <div class="logo-badge">WELLNEST</div>
-            <nav class="nav-links">
+            <nav class="nav-links" id="navLinks">
                 <a href="trainer-dashboard.html">DASHBOARD</a>
                 <a href="blog.html">BLOGS</a>
                 <a href="messages.html" class="active">MESSAGES</a>
                 <a class="nav-logout" onclick="logout()">LOGOUT</a>
             </nav>
+            <div class="hamburger" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 
     <main class="messages-container">
         <!-- Sidebar -->
-        <div class="contacts-panel">
+        <div class="contacts-panel" id="contactsPanel">
             <div class="panel-header">
                 <h3>Chats</h3>
             </div>
             <div class="contacts-list" id="contactsList">
-                <!-- Contacts will be populated by JS -->
                 <div style="text-align: center; padding: 40px; color: #666;">Loading contacts...</div>
             </div>
         </div>
@@ -393,6 +474,7 @@
                         <h4 id="activeContactName">Client Name</h4>
                         <span style="font-size: 12px; color: #18b046;">Online</span>
                     </div>
+                    <button class="hamburger" style="display: none; margin-left: auto;" id="showContactsBtn">👥</button>
                 </div>
 
                 <div class="chat-messages" id="chatMessages">
@@ -413,6 +495,17 @@
 
     <script src="messages.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.getElementById('hamburgerMenu');
+            const navLinks = document.getElementById('navLinks');
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', () => {
+                    hamburger.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                });
+            }
+        });
+
         function logout() {
             if (confirm("Are you sure you want to logout?")) {
                 localStorage.clear();

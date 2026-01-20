@@ -20,6 +20,7 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/trainers")
+@CrossOrigin
 public class TrainerController {
 
     @Autowired

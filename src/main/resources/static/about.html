@@ -60,98 +60,37 @@
 
         .nav-links {
             display: flex;
-            gap: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            gap: 24px;
+            font-size: 14px;
         }
 
         .nav-links a {
-            color: #e0e0e0;
+            color: #f4f4f4;
             text-transform: uppercase;
-            position: relative;
-            padding: 5px 0;
-            transition: color 0.3s ease;
+            transition: color 0.3s;
         }
 
         .nav-links a:hover,
         .nav-links a.active {
             color: #18b046;
-            text-shadow: 0 0 15px rgba(24, 176, 70, 0.9), 0 0 25px rgba(24, 176, 70, 0.5);
         }
 
-        /* Animated underline */
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background-color: #18b046;
-            transform: translateX(-50%);
-            transition: width 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .nav-links a:hover::after,
-        .nav-links a.active::after {
-            width: 100%;
-            box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
-        }
-
-        /* Premium Call Button */
         .call-btn {
-            padding: 10px 24px;
+            padding: 8px 18px;
             border-radius: 999px;
-            background: linear-gradient(135deg, #18b046 0%, #14932a 100%);
+            background: #18b046;
             color: #ffffff;
-            font-size: 12px;
-            font-weight: 700;
             border: none;
-            letter-spacing: 1px;
+            font-size: 12px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(24, 176, 70, 0.3);
             text-transform: uppercase;
+            transition: background 0.3s;
         }
 
         .call-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(24, 176, 70, 0.5);
-            background: linear-gradient(135deg, #1abd4b 0%, #18b046 100%);
+            background: #14932a;
         }
-
-        /* Hamburger */
-        .hamburger {
-            display: none;
-            cursor: pointer;
-            flex-direction: column;
-            gap: 5px;
-            z-index: 101;
-        }
-
-        .hamburger span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background: #18b046;
-            border-radius: 3px;
-            transition: all 0.3s ease;
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(8px) rotate(45deg);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-
-
 
         /* ---------- ABOUT PAGE STYLES ---------- */
         .about-container {
@@ -189,7 +128,7 @@
             background: rgba(24, 176, 70, 0.05);
             border-left: 4px solid #18b046;
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 8px;
             margin-bottom: 60px;
             text-align: center;
         }
@@ -212,7 +151,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 12px;
             transition: all 0.3s ease;
         }
 
@@ -263,7 +202,7 @@
             border: 1px solid rgba(24, 176, 70, 0.2);
             color: #fff;
             padding: 60px 40px;
-            border-radius: 20px;
+            border-radius: 12px;
             margin-bottom: 60px;
         }
 
@@ -313,7 +252,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             grid-column: 1 / -1;
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 12px;
         }
 
         .core-features-section h2 {
@@ -355,7 +294,7 @@
             padding: 40px;
             background: rgba(24, 176, 70, 0.05);
             border: 1px solid rgba(24, 176, 70, 0.2);
-            border-radius: 20px;
+            border-radius: 12px;
             margin-top: 60px;
         }
 
@@ -428,43 +367,8 @@
                 padding: 25px;
             }
 
-            .hamburger {
-                display: flex;
-            }
-
             .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(0, 0, 0, 0.95);
-                backdrop-filter: blur(10px);
-                padding: 30px;
-                gap: 20px;
-                border-bottom: 1px solid rgba(24, 176, 70, 0.2);
-                text-align: center;
-                animation: slideDown 0.3s ease forwards;
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .call-btn {
+                /* Hide on small screens for simplicity or add hamburger later */
                 display: none;
             }
         }
@@ -476,7 +380,7 @@
     <header class="header">
         <div class="nav-container">
             <div class="logo-badge">WELLNEST</div>
-            <nav class="nav-links" id="navLinks">
+            <nav class="nav-links">
                 <a href="index.html">HOME</a>
                 <a href="about.html" class="active">ABOUT US</a>
                 <a href="tracker.html">TRACKER</a>
@@ -485,11 +389,6 @@
                 <a href="signup.html">SIGN UP</a>
             </nav>
             <button class="call-btn">CALL: +91 99999 99999</button>
-            <div class="hamburger" id="hamburgerMenu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </div>
     </header>
 
@@ -624,18 +523,6 @@
     <footer>
         <p>© 2025 WellNest – Smart Health & Fitness Companion</p>
     </footer>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const hamburger = document.getElementById('hamburgerMenu');
-            const navLinks = document.getElementById('navLinks');
-            if (hamburger && navLinks) {
-                hamburger.addEventListener('click', () => {
-                    hamburger.classList.toggle('active');
-                    navLinks.classList.toggle('active');
-                });
-            }
-        });
-    </script>
 </body>
 
 </html>

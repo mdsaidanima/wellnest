@@ -2,6 +2,7 @@ package com.wellnest.wellnest.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "workout_logs")
@@ -15,6 +16,7 @@ public class WorkoutLog {
     private Long userId;
 
     private LocalDate logDate;
+    private LocalTime logTime;
 
     private String exerciseType;
 
@@ -32,6 +34,9 @@ public class WorkoutLog {
 
     public LocalDate getLogDate() { return logDate; }
     public void setLogDate(LocalDate logDate) { this.logDate = logDate; }
+
+    public LocalTime getLogTime() { return logTime; }
+    public void setLogTime(LocalTime logTime) { this.logTime = logTime; }
 
     public String getExerciseType() { return exerciseType; }
     public void setExerciseType(String exerciseType) { this.exerciseType = exerciseType; }

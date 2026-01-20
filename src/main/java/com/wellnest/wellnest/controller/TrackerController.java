@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/tracker")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin
 public class TrackerController {
 
     private final WorkoutLogRepository workoutRepo;
@@ -53,12 +53,17 @@ public class TrackerController {
                 ? LocalDate.parse(payload.get("logDate").toString())
                 : LocalDate.now();
 
+        LocalTime time = payload.get("logTime") != null
+                ? LocalTime.parse(payload.get("logTime").toString())
+                : LocalTime.now();
+
         WorkoutLog log = new WorkoutLog();
         log.setUserId(userId);
         log.setExerciseType(exerciseType);
         log.setDurationMinutes(duration);
         log.setCaloriesBurned(calories);
         log.setLogDate(date);
+        log.setLogTime(time);
 
         WorkoutLog saved = workoutRepo.save(log);
         return ResponseEntity.ok(saved);
@@ -68,6 +73,16 @@ public class TrackerController {
     public List<WorkoutLog> getTodayWorkouts(@PathVariable Long userId) {
         LocalDate today = LocalDate.now();
         return workoutRepo.findByUserIdAndLogDateOrderByLogDateDesc(userId, today);
+    }
+
+    @GetMapping("/workouts/{userId}/range")
+    public List<WorkoutLog> getWorkoutsByRange(
+            @PathVariable Long userId,
+            @RequestParam String start,
+            @RequestParam String end) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        return workoutRepo.findByUserIdAndLogDateBetween(userId, startDate, endDate);
     }
 
     // ========= MEALS =========
@@ -118,6 +133,16 @@ public class TrackerController {
         return mealRepo.findByUserIdAndLogDateOrderByMealTimeAsc(userId, today);
     }
 
+    @GetMapping("/meals/{userId}/range")
+    public List<MealLog> getMealsByRange(
+            @PathVariable Long userId,
+            @RequestParam String start,
+            @RequestParam String end) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        return mealRepo.findByUserIdAndLogDateBetween(userId, startDate, endDate);
+    }
+
     // ========= WATER + SLEEP =========
 
     @PostMapping("/water-sleep")
@@ -138,9 +163,14 @@ public class TrackerController {
                 ? LocalDate.parse(payload.get("logDate").toString())
                 : LocalDate.now();
 
+        LocalTime time = payload.get("logTime") != null
+                ? LocalTime.parse(payload.get("logTime").toString())
+                : LocalTime.now();
+
         WaterSleepLog log = new WaterSleepLog();
         log.setUserId(userId);
         log.setLogDate(date);
+        log.setLogTime(time);
         log.setWaterIntakeLiters(water);
         log.setSleepHours(sleep);
         log.setSleepQuality(quality);
@@ -154,7 +184,18 @@ public class TrackerController {
         LocalDate today = LocalDate.now();
         return waterSleepRepo.findByUserIdAndLogDate(userId, today);
 
-    }// ============ ANALYTICS (Milestone 4) ============
+    }
+
+    @GetMapping("/water-sleep/{userId}/range")
+    public List<WaterSleepLog> getWaterSleepByRange(
+            @PathVariable Long userId,
+            @RequestParam String start,
+            @RequestParam String end) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        return waterSleepRepo.findByUserIdAndLogDateBetween(userId, startDate, endDate);
+    }
+// ============ ANALYTICS (Milestone 4) ============
 
     // ========= DASHBOARD ANALYTICS =========
     @GetMapping("/analytics/{userId}/dashboard")
