@@ -39,17 +39,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form Submission
     postForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const submitBtn = postForm.querySelector('.btn-primary');
+        const submitBtn = postForm.querySelector('.submit-btn');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Saving...';
 
         const postId = document.getElementById('postId').value;
+        const userEmail = localStorage.getItem('userEmail');
+
+        if (!userEmail) {
+            alert('Please login to create a post.');
+            submitBtn.textContent = 'PUBLISH POST';
+            submitBtn.disabled = false;
+            return;
+        }
+
         const postData = {
             title: document.getElementById('postTitle').value,
             content: document.getElementById('postContent').value,
             category: document.getElementById('postCategory').value,
             imageUrl: document.getElementById('postImageUrl').value,
-            authorName: localStorage.getItem('fullName') || 'Unknown User'
+            userEmail: userEmail,
+            postType: 'USER_POST'
         };
 
         try {
@@ -63,38 +73,130 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
+                alert(postId ? 'Post updated successfully!' : 'Post created successfully!');
                 modal.style.display = 'none';
                 postForm.reset();
                 fetchPosts(document.querySelector('.tab-btn.active').dataset.type);
             } else {
-                alert('Failed to save post.');
+                const errorText = await response.text();
+                alert('Failed to save post: ' + errorText);
             }
         } catch (error) {
             console.error('Error saving post:', error);
             alert('Error saving post.');
         } finally {
-            if (!postId) submitBtn.textContent = 'PUBLISH POST';
+            submitBtn.textContent = postId ? 'SAVE CHANGES' : 'PUBLISH POST';
             submitBtn.disabled = false;
         }
     });
 
+    const userEmail = localStorage.getItem("userEmail");
+    if (userEmail) {
+        fetchUserProfile(userEmail);
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "login.html";
+            }
+        });
+    }
+
+    // Hamburger Logic
+    const hamburger = document.getElementById('hamburgerMenu');
+    const navLinksList = document.getElementById('navLinks');
+    if (hamburger && navLinksList) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinksList.classList.toggle('active');
+        });
+    }
+
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'TRAINER') {
+        const dashboardLink = document.getElementById('navDashboard');
+        if (dashboardLink) dashboardLink.href = 'trainer-dashboard.html';
+
+        // Hide non-trainer links
+        const trackerLink = document.getElementById('navTracker');
+        const healthLink = document.getElementById('navHealth');
+        const trainersLink = document.getElementById('navTrainers');
+        if (trackerLink) trackerLink.style.display = 'none';
+        if (healthLink) healthLink.style.display = 'none';
+        if (trainersLink) trainersLink.style.display = 'none';
+
+        // Ensure Messages link is present or visible if we add it
+        const messagesLink = document.getElementById('navMessages');
+        if (messagesLink) messagesLink.style.display = 'inline-block';
+    }
+
+    if (userRole === 'ADMIN') {
+        const adminLink = document.getElementById('adminLink');
+        if (adminLink) adminLink.style.display = 'inline-block';
+    }
 });
+
+async function fetchUserProfile(email) {
+    try {
+        const response = await fetch(`/api/profile?email=${email}`);
+        if (response.ok) {
+            const user = await response.json();
+            const navUserName = document.getElementById("navUserName");
+            if (navUserName) navUserName.innerText = user.fullName || user.name || email.split('@')[0];
+            const navUserRole = document.getElementById("navUserRole");
+            if (navUserRole) {
+                navUserRole.innerText = user.role || "USER";
+                const navUserAvatar = document.getElementById("navUserAvatar");
+                const navUserIcon = document.getElementById("navUserIcon");
+                if (navUserAvatar && user.image_url) {
+                    navUserAvatar.src = user.image_url;
+                    navUserAvatar.style.display = "block";
+                    if (navUserIcon) navUserIcon.style.display = "none";
+                } else if (navUserIcon) {
+                    navUserIcon.style.display = "block";
+                    if (navUserAvatar) navUserAvatar.style.display = "none";
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching profile:", e);
+    }
+}
 
 async function fetchPosts(type = 'all') {
     console.log("DEBUG: fetchPosts called with type:", type);
     const postsList = document.getElementById('postsList');
     postsList.innerHTML = '<p style="text-align:center; color:#666;">Loading...</p>';
 
-    if (type === 'TRAINER_HISTORY') {
-        postsList.style.gridTemplateColumns = '1fr';
-        postsList.style.maxWidth = '600px';
-        postsList.style.margin = '0 auto';
-        fetchTrainerHistory();
-        return;
-    } else {
-        postsList.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
+    // Determine Layout
+    let layout = 'list';
+    // Use GRID for Featured Articles AND Community (cards with pics request)
+    if (type === 'ARTICLE' || type === 'USER_POST' || type === 'all') {
+        layout = 'grid';
+    }
+
+    // Apply Layout Styles
+    if (layout === 'grid') {
+        postsList.style.display = 'grid';
+        postsList.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+        postsList.style.gap = '25px';
         postsList.style.maxWidth = 'none';
         postsList.style.margin = '0';
+    } else {
+        // List Layout (Wide) - unlikely to be used if we switch everything to grid, but safe to keep
+        postsList.style.display = 'flex';
+        postsList.style.flexDirection = 'column';
+        postsList.style.gap = '20px';
+        postsList.style.maxWidth = '800px';
+        postsList.style.margin = '0 auto';
+    }
+
+    if (type === 'TRAINER_HISTORY') {
+        fetchTrainerHistory();
+        return;
     }
 
     try {
@@ -107,7 +209,7 @@ async function fetchPosts(type = 'all') {
         if (!response.ok) throw new Error('Failed to fetch');
 
         const posts = await response.json();
-        renderPosts(posts);
+        renderPosts(posts, layout);
 
     } catch (error) {
         console.error('Error fetching posts:', error);
@@ -117,110 +219,85 @@ async function fetchPosts(type = 'all') {
 
 async function fetchTrainerHistory() {
     const postsList = document.getElementById('postsList');
+    postsList.innerHTML = '<p style="text-align:center; color:#666;">Loading history...</p>';
+    postsList.style.display = 'block'; // Reset to block for list layout
+
     const userEmail = localStorage.getItem('userEmail');
-
-    // First, verify with backend to get latest trainerId
-    try {
-        const profileRes = await fetch(`/api/profile?email=${userEmail}`);
-        if (profileRes.ok) {
-            const user = await profileRes.json();
-            if (user.trainerId) {
-                localStorage.setItem('trainerId', user.trainerId);
-            } else {
-                localStorage.removeItem('trainerId');
-            }
-        }
-    } catch (e) {
-        console.error("Error verifying profile:", e);
-    }
-
-    const trainerId = localStorage.getItem('trainerId');
-
-    if (!trainerId) {
-        postsList.innerHTML = '<p style="text-align:center; color:#666; padding: 40px;">You are not enrolled with any trainer yet.</p>';
-        return;
-    }
+    if (!userEmail) return;
 
     try {
-        const response = await fetch(`/api/trainers/${trainerId}`);
-        if (response.ok) {
-            const trainer = await response.json();
-            renderTrainerHistory([trainer]);
-        } else {
-            postsList.innerHTML = '<p style="text-align:center; color:#666;">No active enrollment found.</p>';
+        // Fetch User Profile to get Trainer ID
+        const profileResp = await fetch(`/api/profile?email=${userEmail}`);
+        if (!profileResp.ok) throw new Error("Failed to fetch profile");
+        const profile = await profileResp.json();
+
+        if (!profile.trainerId) {
+            postsList.innerHTML = `
+                <div style="text-align:center; padding: 40px; color: #aaa;">
+                    <p>You have no active trainer enrollments.</p>
+                     <a href="trainers.html" style="color:#18b046; text-decoration:none; font-weight:bold;">Find a Trainer</a>
+                </div>
+            `;
+            return;
         }
+
+        // Fetch Trainer Details
+        const trainerResp = await fetch(`/api/trainers/${profile.trainerId}`);
+        if (!trainerResp.ok) throw new Error("Failed to fetch trainer");
+        const trainer = await trainerResp.json();
+
+        // Render Trainer History Card
+        renderTrainerHistoryCard(trainer);
+
     } catch (e) {
         console.error(e);
-        postsList.innerHTML = '<p style="text-align:center; color:red;">Error loading trainer history.</p>';
+        postsList.innerHTML = '<p style="text-align:center; color:red;">Failed to load history.</p>';
     }
 }
 
-function renderTrainerHistory(trainers) {
+function renderTrainerHistoryCard(trainer) {
     const postsList = document.getElementById('postsList');
-    postsList.innerHTML = '';
+    postsList.innerHTML = ''; // Clear loading
 
-    trainers.forEach(t => {
-        const card = document.createElement('div');
-        card.className = 'post-card';
-        card.style.display = 'flex';
-        card.style.flexDirection = 'column';
-        card.style.alignItems = 'center';
-        card.style.textAlign = 'center';
-        card.style.padding = '40px 20px'; // Generous padding
-        card.style.gap = '15px';
+    const initials = trainer.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 
-        const initials = t.name ? t.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'T';
-
-        card.innerHTML = `
-            <div class="post-avatar" style="width: 80px; height: 80px; font-size: 32px; border: 2px solid #18b046; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-weight: bold;">${initials}</div>
-            <div>
-                <h2 style="margin: 10px 0 5px; color: #fff; font-size: 24px;">${t.name}</h2>
-                <p style="color: #18b046; font-size: 16px; font-weight: 500; margin-bottom: 5px;">${t.specialization}</p>
-                <div style="background: rgba(24, 176, 70, 0.1); border: 1px solid rgba(24, 176, 70, 0.3); color: #18b046; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-top: 5px;">
-                    Active Enrollment
-                </div>
+    const card = document.createElement('div');
+    card.className = 'trainer-history-card';
+    card.innerHTML = `
+        <div class="th-left">
+            <div class="th-avatar">${initials}</div>
+            <div class="th-info">
+                <div class="th-name">${escapeHtml(trainer.name)}</div>
+                <div class="th-spec">${escapeHtml(trainer.specialization)}</div>
             </div>
-            
-            <div style="margin-top: 15px; width: 100%; display: flex; flex-direction: column; gap: 10px; align-items: center;">
-                <button onclick="cancelEnrollment(${t.id}, '${t.name}')" 
-                    style="background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; color: #ff4d4d; padding: 12px 24px; border-radius: 99px; cursor: pointer; font-weight: bold; font-size: 13px; text-transform: uppercase; transition: all 0.3s; width: 100%; max-width: 250px;">
-                    Cancel Enrollment
-                </button>
-                <p style="font-size: 11px; color: #666;">You can only have one active trainer at a time.</p>
-            </div>
-        `;
-        postsList.appendChild(card);
-    });
+        </div>
+        <div class="th-right">
+            <span class="th-status" style="background: rgba(24, 176, 70, 0.2); color: #18b046;">ACTIVE</span>
+            <button class="th-cancel-btn" onclick="cancelEnrollment('${localStorage.getItem('userEmail')}')">CANCEL ENROLLMENT</button>
+            <div class="th-menu">⋮</div>
+        </div>
+    `;
+    postsList.appendChild(card);
 }
 
-async function cancelEnrollment(trainerId, trainerName) {
-    if (!confirm(`Are you sure you want to cancel your enrollment with ${trainerName}?`)) {
-        return;
-    }
-
-    const userEmail = localStorage.getItem('userEmail');
+async function cancelEnrollment(userEmail) {
+    if (!confirm("Are you sure you want to cancel your enrollment with this trainer?")) return;
     try {
         const response = await fetch('/api/trainers/unhire', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userEmail: userEmail })
+            body: JSON.stringify({ userEmail })
         });
-
         if (response.ok) {
-            localStorage.removeItem('trainerId');
-            alert(`You have successfully cancelled your enrollment with ${trainerName}.`);
-            fetchPosts('TRAINER_HISTORY');
+            alert("Enrollment cancelled.");
+            fetchTrainerHistory(); // Refresh view
         } else {
-            const txt = await response.text();
-            alert("Failed to cancel enrollment: " + txt);
+            alert("Failed to cancel.");
         }
-    } catch (e) {
-        console.error(e);
-        alert("Error cancelling enrollment.");
-    }
+    } catch (e) { console.error(e); }
 }
 
-function renderPosts(posts) {
+function renderPosts(posts, layout = 'list') {
     const postsList = document.getElementById('postsList');
     postsList.innerHTML = '';
 
@@ -232,44 +309,147 @@ function renderPosts(posts) {
     posts.forEach(post => {
         const card = document.createElement('div');
         card.className = 'post-card';
+        // Ensure card fills width in list mode
+        if (layout === 'list') {
+            card.style.width = '100%';
+        }
+
         const initials = post.authorName ? post.authorName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'U';
         const date = new Date(post.createdAt).toLocaleDateString(undefined, {
             year: 'numeric', month: 'short', day: 'numeric'
         });
 
-        const imageHtml = post.imageUrl
-            ? `<img src="${post.imageUrl}" class="post-cover-img" style="display:block;" alt="${escapeHtml(post.title)}">`
+        const hasImage = post.imageUrl && post.imageUrl.trim().length > 0;
+        const imgHtml = hasImage
+            ? `<img src="${post.imageUrl}" class="post-cover-img" alt="${escapeHtml(post.title)}" onerror="this.src='https://via.placeholder.com/600x400/0f3d1e/ffffff?text=WellNest+Post'">`
             : '';
 
+        const badgeHtml = `<div class="post-category-badge" style="${!hasImage ? 'position:relative; top:0; right:0; display:inline-block; margin-bottom:15px;' : ''}">${post.category || 'General'}</div>`;
+
         card.innerHTML = `
-            ${imageHtml}
-            <div class="post-meta">
-                <div class="post-avatar">${initials}</div>
-                <div class="post-author">${post.authorName || 'Unknown User'}</div>
-                <div>• ${date}</div>
-                <div class="post-category">${post.category || 'General'}</div>
+            ${hasImage ? badgeHtml : ''}
+            ${imgHtml}
+            <div class="post-content-area">
+                ${!hasImage ? badgeHtml : ''}
+                <div class="post-meta">
+                    <div class="post-avatar">${initials}</div>
+                    <div class="post-info">
+                        <div class="post-author">${post.authorName || 'Unknown User'}</div>
+                        <div style="font-size: 11px; opacity: 0.7;">${date}</div>
+                    </div>
+                </div>
+                <h3 class="post-title">${escapeHtml(post.title)}</h3>
+                <div class="post-excerpt" style="${!hasImage ? '-webkit-line-clamp: none; max-height: none;' : ''}">${escapeHtml(post.content)}</div>
+                <div class="post-actions">
+                    <div class="action-item" onclick="likePost(${post.id}, this)">
+                        <span>♥</span> ${post.likesCount} Likes
+                    </div>
+                    <div class="action-item" onclick="toggleComments(${post.id})">
+                        <span>💬</span> Comment
+                    </div>
+                     <div class="action-item" onclick="sharePost(${post.id})">
+                        <span>↗</span> Share
+                    </div>
+                    <div class="action-item delete-btn" style="display: ${post.authorName === localStorage.getItem('fullName') ? 'flex' : 'none'};" onclick="deletePost(${post.id})">
+                        <span>🗑</span> Delete
+                    </div>
+                    <div class="action-item edit-btn" style="display: ${post.authorName === localStorage.getItem('fullName') ? 'flex' : 'none'};" onclick='openEditModal(${JSON.stringify(post).replace(/'/g, "&#39;")})'>
+                        <span>✎</span> Edit
+                    </div>
+                </div>
             </div>
-            <h3 class="post-title">${escapeHtml(post.title)}</h3>
-            <div class="post-excerpt">${escapeHtml(post.content)}</div>
-            <div class="post-actions">
-                <div class="action-item" onclick="likePost(${post.id}, this)">
-                    <span>♥</span> ${post.likesCount} Likes
-                </div>
-                <div class="action-item" onclick="toggleComments(${post.id})">
-                    <span>💬</span> Comment
-                </div>
-                 <div class="action-item" onclick="sharePost(${post.id})">
-                    <span>↗</span> Share
-                </div>
-                <div class="action-item delete-btn" style="color: #ff4d4d; display: ${post.authorName === localStorage.getItem('fullName') ? 'flex' : 'none'};" onclick="deletePost(${post.id})">
-                    <span>🗑</span> Delete
-                </div>
-                <div class="action-item edit-btn" style="color: #4da6ff; display: ${post.authorName === localStorage.getItem('fullName') ? 'flex' : 'none'};" onclick='openEditModal(${JSON.stringify(post).replace(/'/g, "&#39;")})'>
-                    <span>✎</span> Edit
+            
+            <!-- Hidden Comment Section -->
+            <div id="comments-${post.id}" class="comments-section">
+                <div id="comments-list-${post.id}"></div>
+                <div class="comment-input-box">
+                    <input type="text" id="comment-input-${post.id}" class="comment-input" placeholder="Write a comment...">
+                    <button onclick="submitComment(${post.id})" class="comment-submit">Post</button>
                 </div>
             </div>
         `;
         postsList.appendChild(card);
+    });
+}
+
+// Interactive Functions
+async function likePost(id, btn) {
+    try {
+        const response = await fetch(`/api/blog/${id}/like`, { method: 'POST' });
+        if (response.ok) {
+            const updatedPost = await response.json();
+            btn.innerHTML = `<span>♥</span> ${updatedPost.likesCount} Likes`;
+            btn.classList.add('liked');
+        }
+    } catch (e) { console.error(e); }
+}
+
+function toggleComments(id) {
+    const section = document.getElementById(`comments-${id}`);
+    if (section.style.display === 'block') {
+        section.style.display = 'none';
+    } else {
+        section.style.display = 'block';
+        loadComments(id);
+    }
+}
+
+async function loadComments(id) {
+    const list = document.getElementById(`comments-list-${id}`);
+    list.innerHTML = '<p style="color:#666; font-size:12px;">Loading comments...</p>';
+    try {
+        const response = await fetch(`/api/blog/${id}/comments`);
+        const comments = await response.json();
+        if (comments.length === 0) {
+            list.innerHTML = '<p style="color:#666; font-size:12px;">No comments yet. Be the first!</p>';
+        } else {
+            list.innerHTML = comments.map(c => `
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(c.authorName)}</span>
+                        <span>${new Date(c.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div>${escapeHtml(c.content)}</div>
+                </div>
+            `).join('');
+        }
+    } catch (e) {
+        list.innerHTML = '<p style="color:red; font-size:12px;">Failed to load comments.</p>';
+    }
+}
+
+async function submitComment(id) {
+    const input = document.getElementById(`comment-input-${id}`);
+    const content = input.value.trim();
+    if (!content) return;
+
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+        alert("Please login to comment.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/blog/${id}/comments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userEmail, content })
+        });
+        if (response.ok) {
+            input.value = '';
+            loadComments(id); // Reload comments
+        } else {
+            alert("Failed to post comment.");
+        }
+    } catch (e) { console.error(e); }
+}
+
+function sharePost(id) {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+        alert("Link copied to clipboard!");
+    }).catch(() => {
+        alert("Failed to copy link.");
     });
 }
 
@@ -281,14 +461,29 @@ function escapeHtml(text) {
 
 async function deletePost(id) {
     if (!confirm('Are you sure you want to delete this post?')) return;
+
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+        alert('Please login to delete posts.');
+        return;
+    }
+
     try {
-        const response = await fetch(`/api/blog/${id}`, { method: 'DELETE' });
+        const response = await fetch(`/api/blog/${id}?userEmail=${encodeURIComponent(userEmail)}`, {
+            method: 'DELETE'
+        });
+
         if (response.ok) {
+            alert('Post deleted successfully!');
             fetchPosts(document.querySelector('.tab-btn.active').dataset.type);
         } else {
-            alert('Error deleting post.');
+            const errorText = await response.text();
+            alert('Error deleting post: ' + errorText);
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error('Delete error:', e);
+        alert('Error deleting post.');
+    }
 }
 
 function openEditModal(post) {

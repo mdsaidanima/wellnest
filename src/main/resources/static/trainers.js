@@ -1,4 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Role Checks
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'TRAINER') {
+        window.location.href = 'trainer-dashboard.html';
+    }
+
+    // Hamburger Logic
+    const hamburger = document.getElementById('hamburgerMenu');
+    const navLinksList = document.getElementById('navLinks');
+    if (hamburger && navLinksList) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinksList.classList.toggle('active');
+        });
+    }
+
+    // Logout confirmation moved to inline script or handled here
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.onclick = () => {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        };
+    }
+
     fetchTrainers();
 });
 

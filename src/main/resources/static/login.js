@@ -36,6 +36,7 @@ async function login() {
     localStorage.setItem('token', data.token);
     localStorage.setItem('userId', data.userId);
     localStorage.setItem('role', data.role);
+    localStorage.setItem('userRole', data.role);
     localStorage.setItem('fullName', data.fullName); // Use real name from DB
 
     // Store profile data if available (fallback to empty if not set)
@@ -49,7 +50,9 @@ async function login() {
     console.log("Login successful:", data);
     alert("Login successful! Redirecting to dashboard...");
 
-    if (data.role === 'TRAINER') {
+    if (data.role === 'ADMIN') {
+      window.location.href = "admin.html";
+    } else if (data.role === 'TRAINER') {
       window.location.href = "trainer-dashboard.html";
     } else {
       window.location.href = "dashboard.html";

@@ -70,26 +70,34 @@ async function loadWorkouts() {
   if (!auth) return;
 
   const listEl = document.getElementById("workoutList");
-  listEl.innerHTML = "Loading...";
+  listEl.innerHTML = "Loading history...";
+
+  const endDate = new Date().toISOString().slice(0, 10);
+  const start = new Date();
+  start.setDate(start.getDate() - 6);
+  const startDate = start.toISOString().slice(0, 10);
 
   try {
     const res = await fetch(
-      `${API_BASE_URL}/workouts/${auth.userId}/today`
+      `${API_BASE_URL}/workouts/${auth.userId}/range?start=${startDate}&end=${endDate}`
     );
     if (!res.ok) {
-      listEl.innerHTML = "Could not load workouts for today.";
+      listEl.innerHTML = "Could not load workout history.";
       return;
     }
     const items = await res.json();
 
     if (!items || items.length === 0) {
       listEl.className = "list-empty";
-      listEl.textContent = "No workouts logged today";
+      listEl.textContent = "No workouts logged in the last 7 days";
       return;
     }
 
     listEl.className = "";
     listEl.innerHTML = "";
+    // Sort by date desc
+    items.sort((a, b) => new Date(b.logDate) - new Date(a.logDate));
+
     items.forEach((w) => {
       const div = document.createElement("div");
       div.className = "log-item";
@@ -175,24 +183,32 @@ async function loadMeals() {
   if (!auth) return;
 
   const listEl = document.getElementById("mealList");
-  listEl.innerHTML = "Loading...";
+  listEl.innerHTML = "Loading history...";
+
+  const endDate = new Date().toISOString().slice(0, 10);
+  const start = new Date();
+  start.setDate(start.getDate() - 6);
+  const startDate = start.toISOString().slice(0, 10);
 
   try {
-    const res = await fetch(`${API_BASE_URL}/meals/${auth.userId}/today`);
+    const res = await fetch(`${API_BASE_URL}/meals/${auth.userId}/range?start=${startDate}&end=${endDate}`);
     if (!res.ok) {
-      listEl.innerHTML = "Could not load meals for today.";
+      listEl.innerHTML = "Could not load meal history.";
       return;
     }
     const items = await res.json();
 
     if (!items || items.length === 0) {
       listEl.className = "list-empty";
-      listEl.textContent = "No meals logged today";
+      listEl.textContent = "No meals logged in the last 7 days";
       return;
     }
 
     listEl.className = "";
     listEl.innerHTML = "";
+    // Sort by date desc
+    items.sort((a, b) => new Date(b.logDate) - new Date(a.logDate));
+
     items.forEach((m) => {
       const div = document.createElement("div");
       div.className = "log-item";
@@ -268,26 +284,34 @@ async function loadWaterSleep() {
   if (!auth) return;
 
   const listEl = document.getElementById("waterSleepList");
-  listEl.innerHTML = "Loading...";
+  listEl.innerHTML = "Loading history...";
+
+  const endDate = new Date().toISOString().slice(0, 10);
+  const start = new Date();
+  start.setDate(start.getDate() - 6);
+  const startDate = start.toISOString().slice(0, 10);
 
   try {
     const res = await fetch(
-      `${API_BASE_URL}/water-sleep/${auth.userId}/today`
+      `${API_BASE_URL}/water-sleep/${auth.userId}/range?start=${startDate}&end=${endDate}`
     );
     if (!res.ok) {
-      listEl.innerHTML = "Could not load water/sleep logs.";
+      listEl.innerHTML = "Could not load water/sleep history.";
       return;
     }
     const items = await res.json();
 
     if (!items || items.length === 0) {
       listEl.className = "list-empty";
-      listEl.textContent = "No water & sleep logs for today";
+      listEl.textContent = "No water & sleep logs in the last 7 days";
       return;
     }
 
     listEl.className = "";
     listEl.innerHTML = "";
+    // Sort by date desc
+    items.sort((a, b) => new Date(b.logDate) - new Date(a.logDate));
+
     items.forEach((ws) => {
       const div = document.createElement("div");
       div.className = "log-item";
@@ -318,6 +342,13 @@ async function loadWaterSleep() {
 // -------- INIT --------
 
 document.addEventListener("DOMContentLoaded", () => {
+  const userEmail = localStorage.getItem("userEmail");
+  if (userEmail) {
+    fetchUserProfile(userEmail);
+  }
+
+  /* logoutBtn handled below in Role Handling section */
+
   const workoutBtn = document.getElementById("logWorkoutBtn");
   const mealBtn = document.getElementById("logMealBtn");
   const waterSleepBtn = document.getElementById("logWaterSleepBtn");
@@ -326,8 +357,129 @@ document.addEventListener("DOMContentLoaded", () => {
   if (mealBtn) mealBtn.addEventListener("click", logMeal);
   if (waterSleepBtn) waterSleepBtn.addEventListener("click", logWaterSleep);
 
+  // Auto-detect Sleep Quality
+  const sleepHoursInput = document.getElementById("sleepHours");
+  const sleepQualitySelect = document.getElementById("sleepQuality");
+  if (sleepHoursInput && sleepQualitySelect) {
+    sleepHoursInput.addEventListener("input", () => {
+      const hours = parseFloat(sleepHoursInput.value);
+      if (isNaN(hours)) {
+        sleepQualitySelect.value = "";
+        return;
+      }
+      let quality = "";
+      let emoji = "";
+      if (hours >= 8.5) {
+        quality = "Excellent";
+        emoji = "🌟";
+      } else if (hours >= 7) {
+        quality = "Good";
+        emoji = "✅";
+      } else if (hours >= 5.5) {
+        quality = "Average";
+        emoji = "😐";
+      } else {
+        quality = "Poor";
+        emoji = "😴";
+      }
+
+      if (sleepQualitySelect.value !== quality) {
+        sleepQualitySelect.value = quality;
+        showToast(`Auto-detected Sleep Quality: ${quality} ${emoji}`);
+      }
+    });
+  }
+
   // Load today's logs
   loadWorkouts();
   loadMeals();
   loadWaterSleep();
+
+  // Role Handling
+  const userRole = localStorage.getItem('userRole');
+  if (userRole === 'TRAINER') {
+    const dashboardLink = document.getElementById('navDashboard');
+    if (dashboardLink) dashboardLink.href = 'trainer-dashboard.html';
+
+    const messagesLink = document.getElementById('navMessages');
+    if (messagesLink) messagesLink.style.display = 'inline-block';
+  }
+
+  if (userRole === 'ADMIN') {
+    const adminLink = document.getElementById('adminLink');
+    if (adminLink) adminLink.style.display = 'inline-block';
+  }
+
+  // Hamburger Logic
+  const hamburger = document.getElementById('hamburgerMenu');
+  const navLinks = document.getElementById('navLinks');
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+  }
+
+  // Logout Logic
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      if (confirm("Are you sure you want to logout?")) {
+        localStorage.clear();
+        window.location.href = "login.html";
+      }
+    });
+  }
 });
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  // Clear any existing timeout to avoid premature hiding
+  if (toast.timeoutId) clearTimeout(toast.timeoutId);
+
+  toast.innerHTML = `
+    <svg xmlns="http://www.w3.org/2001/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span>${message}</span>
+  `;
+
+  toast.classList.add("show");
+
+  toast.timeoutId = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+async function fetchUserProfile(email) {
+  try {
+    const response = await fetch(`/api/profile?email=${email}`);
+    if (response.ok) {
+      const user = await response.json();
+
+      // Update Nav Profile section
+      const navUserName = document.getElementById("navUserName");
+      if (navUserName) {
+        navUserName.innerText = user.fullName || user.name || email.split('@')[0];
+      }
+      const navUserRole = document.getElementById("navUserRole");
+      if (navUserRole) {
+        navUserRole.innerText = user.role || "USER";
+        const navUserAvatar = document.getElementById("navUserAvatar");
+        const navUserIcon = document.getElementById("navUserIcon");
+        if (navUserAvatar && user.image_url) {
+          navUserAvatar.src = user.image_url;
+          navUserAvatar.style.display = "block";
+          if (navUserIcon) navUserIcon.style.display = "none";
+        } else if (navUserIcon) {
+          navUserIcon.style.display = "block";
+          if (navUserAvatar) navUserAvatar.style.display = "none";
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error fetching profile:", e);
+  }
+}

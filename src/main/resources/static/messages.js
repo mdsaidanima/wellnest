@@ -12,6 +12,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     fetchContacts();
+    fetchTrainerProfile();
+
+    // Hamburger Logic
+    const hamburger = document.getElementById('hamburgerMenu');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // Logout Logic
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        });
+    }
 
     // Allow Enter key to send messages
     const input = document.getElementById('chatInput');
@@ -21,6 +43,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+async function fetchTrainerProfile() {
+    try {
+        const response = await fetch(`/api/profile?email=${trainerEmail}`);
+        if (response.ok) {
+            const user = await response.json();
+            const navUserName = document.getElementById("navUserName");
+            if (navUserName) navUserName.innerText = user.fullName || trainerEmail.split('@')[0];
+            const navUserRole = document.getElementById("navUserRole");
+            if (navUserRole) navUserRole.innerText = user.role || "TRAINER";
+            const navUserAvatar = document.getElementById("navUserAvatar");
+            const navUserIcon = document.getElementById("navUserIcon");
+            if (navUserAvatar && user.image_url) {
+                navUserAvatar.src = user.image_url;
+                navUserAvatar.style.display = "block";
+                if (navUserIcon) navUserIcon.style.display = "none";
+            }
+        }
+    } catch (e) { console.error(e); }
+}
 
 async function fetchContacts() {
     const list = document.getElementById('contactsList');

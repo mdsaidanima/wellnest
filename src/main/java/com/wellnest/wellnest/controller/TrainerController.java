@@ -38,8 +38,22 @@ public class TrainerController {
     // Seeding some dummy data if empty
     @PostConstruct
     public void init() {
+        seedAdmin();
         seedJack();
         seedHardin();
+    }
+
+    private void seedAdmin() {
+        String adminEmail = "admin@wellnest.com";
+        if (!userRepository.existsByEmail(adminEmail)) {
+            User admin = new User();
+            admin.setFullName("WellNest Admin");
+            admin.setEmail(adminEmail);
+            admin.setPassword("admin123");
+            admin.setRole("ADMIN");
+            userRepository.save(admin);
+            System.out.println("DEBUG: Dedicated Admin account created: " + adminEmail);
+        }
     }
 
     private void seedJack() {
@@ -111,6 +125,7 @@ public class TrainerController {
     @GetMapping("/reset")
     public String resetTrainers() {
         trainerRepository.deleteAll();
+        seedAdmin();
         seedJack(); 
         seedHardin();
 
@@ -119,8 +134,8 @@ public class TrainerController {
         List<User> allU = userRepository.findAll();
         for (User u : allU) {
             u.setTrainerId(null); // Clear connection
-            if (u.getFullName().toLowerCase().contains("mohammad")) {
-                u.setRole("USER");
+            if (u.getFullName().toLowerCase().contains("mohammad") || u.getFullName().toLowerCase().contains("saidanima")) {
+                u.setRole("USER"); // Reset back to regular user
             }
             userRepository.save(u);
         }
@@ -431,5 +446,28 @@ public class TrainerController {
         userRepository.save(user);
 
         return ResponseEntity.ok(Map.of("message", "User request rejected."));
+    }
+
+    // Update trainer profile
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateTrainer(@PathVariable Long id, @RequestBody Trainer trainerData) {
+        return trainerRepository.findById(id).map(trainer -> {
+            trainer.setName(trainerData.getName());
+            trainer.setSpecialization(trainerData.getSpecialization());
+            trainer.setExperienceYears(trainerData.getExperienceYears());
+            trainer.setBio(trainerData.getBio());
+            trainer.setImageUrl(trainerData.getImageUrl());
+            trainer.setAge(trainerData.getAge());
+            
+            Trainer saved = trainerRepository.save(trainer);
+            
+            // Also sync user name if it changed
+            userRepository.findByEmail(trainer.getContactEmail()).ifPresent(user -> {
+                user.setFullName(trainerData.getName());
+                userRepository.save(user);
+            });
+            
+            return ResponseEntity.ok(saved);
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

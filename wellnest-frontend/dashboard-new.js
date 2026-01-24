@@ -5,7 +5,7 @@ const TRACKER_API = "http://localhost:8080/api/tracker";
 
 let trainerUserId = null;
 let chatInterval = null;
-let currentPeriod = 'week'; // Default to week view to match screenshots
+let currentPeriod = 'today'; // Matches the 'active' button in HTML on load
 
 // Chart instances
 let workoutDurationChart = null;
@@ -50,12 +50,26 @@ async function initDashboard() {
     // Setup Tab Listeners
     setupTabListeners();
 
+    // Role Handling
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'TRAINER') {
+        window.location.href = 'trainer-dashboard.html';
+        return;
+    }
+
+    if (userRole === 'ADMIN') {
+        const adminLink = document.getElementById('adminLink');
+        if (adminLink) adminLink.style.display = 'inline-block';
+    }
+
     // Logout
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
-            localStorage.clear();
-            window.location.href = "index.html";
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
         });
     }
 }
@@ -81,7 +95,27 @@ async function fetchUserProfile(email) {
             const user = await response.json();
             const welcomeSpan = document.getElementById("welcomeName");
             if (welcomeSpan) {
-                welcomeSpan.innerText = user.displayName || user.name || email.split('@')[0];
+                welcomeSpan.innerText = user.fullName || user.name || email.split('@')[0];
+            }
+
+            // Update Nav Profile section
+            const navUserName = document.getElementById("navUserName");
+            if (navUserName) {
+                navUserName.innerText = user.fullName || user.name || email.split('@')[0];
+            }
+            const navUserRole = document.getElementById("navUserRole");
+            if (navUserRole) {
+                navUserRole.innerText = user.role || "USER";
+            }
+            const navUserAvatar = document.getElementById("navUserAvatar");
+            const navUserIcon = document.getElementById("navUserIcon");
+            if (navUserAvatar && user.image_url) {
+                navUserAvatar.src = user.image_url;
+                navUserAvatar.style.display = "block";
+                if (navUserIcon) navUserIcon.style.display = "none";
+            } else if (navUserIcon) {
+                navUserIcon.style.display = "block";
+                if (navUserAvatar) navUserAvatar.style.display = "none";
             }
         }
     } catch (e) {
@@ -97,9 +131,9 @@ async function loadAnalyticsData(period) {
         updateDashboardUI(stats);
     } catch (error) {
         console.error("Error loading analytics:", error);
-        // Use mock data for demonstration
-        const mockStats = getMockStats(period);
-        updateDashboardUI(mockStats);
+        // Error handling: Show empty stats instead of mock data to avoid confusion
+        const emptyStats = processTrackerData([], [], [], period);
+        updateDashboardUI(emptyStats);
     }
 }
 
@@ -151,8 +185,8 @@ function processTrackerData(workouts, meals, waterSleep, period) {
     const totalCaloriesConsumed = meals.reduce((sum, m) => sum + (m.calories || 0), 0);
 
     const today = new Date().toISOString().slice(0, 10);
-    const todayWaterSleep = waterSleep.find(ws => ws.logDate === today);
-    const waterToday = todayWaterSleep ? todayWaterSleep.waterIntakeLiters : 0;
+    const todayWaterLogs = waterSleep.filter(ws => ws.logDate === today);
+    const waterToday = todayWaterLogs.reduce((sum, ws) => sum + (ws.waterIntakeLiters || 0), 0);
 
     const uniqueWorkoutDays = new Set(workouts.map(w => w.logDate));
     window.exerciseDaysThisWeek = uniqueWorkoutDays.size;
@@ -176,10 +210,10 @@ function processTrackerData(workouts, meals, waterSleep, period) {
     const sleepHistory = generateSleepHistory(waterSleep, labels, period);
 
     return {
-        steps: steps || 2000,
-        calories: totalCaloriesBurned || 250,
-        distance: distance || 0,
-        waterToday: waterToday || 0,
+        steps: steps,
+        calories: totalCaloriesBurned,
+        distance: distance,
+        waterToday: waterToday,
         labels: labels,
         workoutDurationData: workoutDurationData,
         calorieHistory: calorieHistory,

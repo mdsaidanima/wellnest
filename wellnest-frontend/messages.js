@@ -13,6 +13,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fetchContacts();
 
+    // Profile Chip Logic
+    if (trainerEmail) {
+        fetchNavProfile(trainerEmail);
+    }
+
+    // Logout Logic
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        });
+    }
+
+    // Hamburger Logic
+    const hamburger = document.getElementById('hamburgerMenu');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
     // Allow Enter key to send messages
     const input = document.getElementById('chatInput');
     if (input) {
@@ -21,6 +47,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+async function fetchNavProfile(email) {
+    try {
+        const response = await fetch(`/api/profile?email=${email}`);
+        if (response.ok) {
+            const user = await response.json();
+            const navUserName = document.getElementById("navUserName");
+            if (navUserName) navUserName.innerText = user.fullName || user.name || email.split('@')[0];
+            const navUserRole = document.getElementById("navUserRole");
+            if (navUserRole) navUserRole.innerText = user.role || "TRAINER";
+
+            const navUserAvatar = document.getElementById("navUserAvatar");
+            const navUserIcon = document.getElementById("navUserIcon");
+            if (navUserAvatar && user.image_url) {
+                navUserAvatar.src = user.image_url;
+                navUserAvatar.style.display = "block";
+                if (navUserIcon) navUserIcon.style.display = "none";
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching nav profile:", e);
+    }
+}
 
 async function fetchContacts() {
     const list = document.getElementById('contactsList');

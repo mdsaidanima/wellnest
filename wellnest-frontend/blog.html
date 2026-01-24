@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Health Blog - WellNest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,7 +15,7 @@
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000;
             background: radial-gradient(circle at top, #0f3d1e 0%, #000000 85%);
             background-attachment: fixed;
@@ -46,22 +48,33 @@
         }
 
         .logo-badge {
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 999px;
-            background: rgba(24, 176, 70, 0.1);
+            background: rgba(24, 176, 70, 0.15);
             border: 1px solid #18b046;
-            font-size: 13px;
-            font-weight: bold;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: #18b046;
+        }
+
+        .nav-user-role {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            color: #18b046;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .nav-links {
             display: flex;
             gap: 30px;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 0.5px;
         }
 
@@ -71,6 +84,7 @@
             text-decoration: none;
             position: relative;
             padding: 5px 0;
+            font-family: 'Inter', sans-serif;
             transition: color 0.3s ease;
         }
 
@@ -173,7 +187,7 @@
 
         /* Blog Container */
         .blog-container {
-            max-width: 900px;
+            max-width: 1400px;
             margin: 100px auto 40px;
             padding: 0 20px;
             flex: 1;
@@ -258,6 +272,8 @@
             padding: 25px;
             margin-bottom: 25px;
             transition: transform 0.3s, border-color 0.3s;
+            display: flex;
+            flex-direction: column;
         }
 
         .post-card:hover {
@@ -270,8 +286,8 @@
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 20px;
-            display: none;
-            /* Hidden by default if no image */
+            display: block;
+            /* Show if present */
         }
 
         .post-meta {
@@ -310,6 +326,13 @@
             text-transform: uppercase;
         }
 
+        .nav-user-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+        }
+
         .post-title {
             font-size: 20px;
             margin-bottom: 15px;
@@ -327,24 +350,46 @@
 
         .post-actions {
             display: flex;
-            gap: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding-top: 15px;
+            margin-top: auto;
+            /* Push to bottom of card */
         }
 
         .action-item {
             color: #aaa;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: color 0.3s;
+            gap: 5px;
+            transition: all 0.2s ease;
+            padding: 5px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            white-space: nowrap;
         }
 
-        .action-item:hover,
+        .action-item:hover {
+            background: rgba(24, 176, 70, 0.1);
+            color: #18b046;
+        }
+
         .action-item.liked {
             color: #18b046;
+            background: rgba(24, 176, 70, 0.1);
+        }
+
+        .action-item.delete-btn:hover {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+        }
+
+        .action-item.edit-btn:hover {
+            background: rgba(77, 166, 255, 0.1);
+            color: #4da6ff;
         }
 
         /* Modal */
@@ -416,16 +461,55 @@
             border-color: #18b046;
         }
 
-        .submit-btn {
-            width: 100%;
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn,
+        .cancel-btn {
+            flex: 1;
             padding: 12px;
-            background: #18b046;
-            color: #fff;
             border: none;
             border-radius: 6px;
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-logout-icon {
+            margin-left: 8px;
+            padding-left: 8px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ff6b6b;
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: #18b046;
+            color: #fff;
+        }
+
+        .submit-btn:hover {
+            background: #15a03d;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            border: 1px solid #666;
+            color: #aaa;
+        }
+
+        .cancel-btn:hover {
+            background: #222;
+            border-color: #888;
         }
 
         /* Comments Section */
@@ -493,6 +577,90 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* Trainer History Card */
+        .trainer-history-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .th-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .th-avatar {
+            width: 45px;
+            height: 45px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            border: 1px solid #555;
+        }
+
+        .th-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .th-name {
+            font-weight: bold;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .th-spec {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .th-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .th-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .th-cancel-btn {
+            background: transparent;
+            border: 1px solid #ff4d4d;
+            color: #ff4d4d;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .th-cancel-btn:hover {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        .th-menu {
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
             .blog-header {
                 flex-direction: column;
@@ -512,18 +680,35 @@
     <!-- Header -->
     <header class="header">
         <div class="nav-container">
-            <div class="logo-badge">WELLNEST</div>
+            <div class="logo-badge">WELLNEST ✨</div>
             <nav class="nav-links" id="navLinks">
-                <a href="index.html" id="navHome">HOME</a>
                 <a href="dashboard.html" id="navDashboard">DASHBOARD</a>
-                <a href="tracker.html" id="navTracker">TRACKER</a>
+                <a href="tracker.html" id="navTracker">TRACKERS</a>
                 <a href="health-tools.html" id="navHealth">HEALTH TOOLS</a>
-                <a href="blog.html" id="navBlogs" style="color: #18b046;">BLOGS</a>
-                <a href="messages.html" id="navMessages" style="display:none;">MESSAGES</a>
+                <a href="blog.html" id="navBlogs" class="active">BLOG</a>
                 <a href="trainers.html" id="navTrainers">TRAINERS</a>
-                <a href="profile.html" id="navProfile">PROFILE</a>
-                <a class="nav-logout" id="logoutBtn">LOGOUT</a>
+                <a href="messages.html" id="navMessages" style="display: none;">MESSAGES</a>
+                <a href="admin.html" id="adminLink" style="display: none; color: #ffc107;">ADMIN</a>
             </nav>
+
+            <div class="user-profile-section">
+                <a href="profile.html" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <div class="user-profile-info">
+                        <span class="nav-user-name" id="navUserName">USER</span>
+                        <span class="nav-user-role" id="navUserRole">USER</span>
+                    </div>
+                    <div class="nav-user-avatar" id="navUserAvatarContainer">
+                        <svg id="navUserIcon" xmlns="http://www.w3.org/2001/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <img src="" id="navUserAvatar" alt="Profile">
+                    </div>
+                </a>
+                <span class="nav-logout-icon" id="logoutBtn">LOGOUT</span>
+            </div>
+
             <div class="hamburger" id="hamburgerMenu">
                 <span></span>
                 <span></span>
@@ -558,8 +743,9 @@
     <div class="modal" id="createPostModal">
         <div class="modal-content">
             <span class="modal-close" id="closeModalBtn">&times;</span>
-            <h2>Create New Post</h2>
-            <form id="createPostForm">
+            <h2 id="modalTitle">Create New Post</h2>
+            <form id="postForm">
+                <input type="hidden" id="postId" value="">
                 <div class="form-group">
                     <label>Title</label>
                     <input type="text" id="postTitle" required placeholder="Enter post title">
@@ -582,7 +768,10 @@
                     <label>Content</label>
                     <textarea id="postContent" rows="5" required placeholder="Share your thoughts..."></textarea>
                 </div>
-                <button type="submit" class="submit-btn" id="submitPostBtn">PUBLISH POST</button>
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" id="cancelPostBtn">CANCEL</button>
+                    <button type="submit" class="submit-btn" id="submitPostBtn">PUBLISH POST</button>
+                </div>
             </form>
         </div>
     </div>
@@ -591,7 +780,7 @@
         <p>© 2025 WellNest – Smart Health & Fitness Companion</p>
     </footer>
 
-    <script src="blog.js?v=100"></script>
+    <script src="blog.js?v=2.8"></script>
     <!-- Add logout logic here just in case blog.js fails or is separated -->
     <!-- Add logout logic here just in case blog.js fails or is separated -->
     <script>

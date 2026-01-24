@@ -217,6 +217,21 @@ window.getNewTip = getNewTip;
 // INITIALISE
 // =========================
 document.addEventListener("DOMContentLoaded", () => {
+    const userEmail = localStorage.getItem("userEmail");
+    if (userEmail) {
+        fetchUserProfile(userEmail);
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "login.html";
+            }
+        });
+    }
+
     // attach BMI submit handler
     if (bmiForm) {
         bmiForm.addEventListener("submit", handleBMISubmit);
@@ -224,4 +239,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // first tip
     getNewTip();
+
+    // Role handling
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'TRAINER') {
+        const dashboardLink = document.getElementById('navDashboard');
+        if (dashboardLink) dashboardLink.href = 'trainer-dashboard.html';
+
+        const trackerLink = document.getElementById('navTracker');
+        if (trackerLink) trackerLink.style.display = 'none';
+
+        const messagesLink = document.getElementById('navMessages');
+        if (messagesLink) messagesLink.style.display = 'inline-block';
+    }
+
+    if (userRole === 'ADMIN') {
+        const adminLink = document.getElementById('adminLink');
+        if (adminLink) adminLink.style.display = 'inline-block';
+    }
+
+    // Hamburger Logic
+    const hamburger = document.getElementById('hamburgerMenu');
+    const navLinksList = document.getElementById('navLinks');
+    if (hamburger && navLinksList) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinksList.classList.toggle('active');
+        });
+    }
 });
+
+async function fetchUserProfile(email) {
+    try {
+        const response = await fetch(`/api/profile?email=${email}`);
+        if (response.ok) {
+            const user = await response.json();
+            const navUserName = document.getElementById("navUserName");
+            if (navUserName) navUserName.innerText = user.fullName || user.name || email.split('@')[0];
+            const navUserRole = document.getElementById("navUserRole");
+            if (navUserRole) {
+                navUserRole.innerText = user.role || "USER";
+                const navUserAvatar = document.getElementById("navUserAvatar");
+                const navUserIcon = document.getElementById("navUserIcon");
+                if (navUserAvatar && user.image_url) {
+                    navUserAvatar.src = user.image_url;
+                    navUserAvatar.style.display = "block";
+                    if (navUserIcon) navUserIcon.style.display = "none";
+                } else if (navUserIcon) {
+                    navUserIcon.style.display = "block";
+                    if (navUserAvatar) navUserAvatar.style.display = "none";
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching profile:", e);
+    }
+}

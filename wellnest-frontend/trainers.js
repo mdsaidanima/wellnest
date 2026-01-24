@@ -1,6 +1,75 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const userEmail = localStorage.getItem("userEmail");
+    if (userEmail) {
+        fetchUserProfile(userEmail);
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "login.html";
+        });
+    }
+
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'TRAINER') {
+        const dashboardLink = document.getElementById('navDashboard');
+        if (dashboardLink) dashboardLink.href = 'trainer-dashboard.html';
+
+        const trackerLink = document.getElementById('navTracker');
+        const healthLink = document.getElementById('navHealth');
+        if (trackerLink) trackerLink.style.display = 'none';
+        if (healthLink) healthLink.style.display = 'none';
+
+        const messagesLink = document.getElementById('navMessages');
+        if (messagesLink) messagesLink.style.display = 'inline-block';
+    }
+
+    if (userRole === 'ADMIN') {
+        const adminLink = document.getElementById('adminLink');
+        if (adminLink) adminLink.style.display = 'inline-block';
+    }
+
+    // Hamburger Logic
+    const hamburger = document.getElementById('hamburgerMenu');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
     fetchTrainers();
 });
+
+async function fetchUserProfile(email) {
+    try {
+        const response = await fetch(`/api/profile?email=${email}`);
+        if (response.ok) {
+            const user = await response.json();
+            const navUserName = document.getElementById("navUserName");
+            if (navUserName) navUserName.innerText = user.fullName || user.name || email.split('@')[0];
+            const navUserRole = document.getElementById("navUserRole");
+            if (navUserRole) {
+                navUserRole.innerText = user.role || "USER";
+                const navUserAvatar = document.getElementById("navUserAvatar");
+                const navUserIcon = document.getElementById("navUserIcon");
+                if (navUserAvatar && user.image_url) {
+                    navUserAvatar.src = user.image_url;
+                    navUserAvatar.style.display = "block";
+                    if (navUserIcon) navUserIcon.style.display = "none";
+                } else if (navUserIcon) {
+                    navUserIcon.style.display = "block";
+                    if (navUserAvatar) navUserAvatar.style.display = "none";
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching profile:", e);
+    }
+}
 
 async function fetchTrainers() {
     const userEmail = localStorage.getItem('userEmail');

@@ -32,7 +32,7 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 100;
+            z-index: 2000;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             border-bottom: 1px solid rgba(24, 176, 70, 0.2);
@@ -87,6 +87,100 @@
         .nav-logout {
             cursor: pointer;
             color: #ff4d4d !important;
+        }
+
+        /* Standardized User Profile Section */
+        .user-profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-profile-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(24, 176, 70, 0.3);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .user-profile-chip:hover {
+            background: rgba(24, 176, 70, 0.1);
+            border-color: #18b046;
+            box-shadow: 0 0 15px rgba(24, 176, 70, 0.2);
+        }
+
+        .user-profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+
+        .nav-user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-user-role {
+            font-size: 10px;
+            font-weight: 800;
+            color: #18b046;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #18b046;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(24, 176, 70, 0.1);
+            color: #18b046;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .nav-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .nav-user-avatar svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.5;
+        }
+
+        .nav-logout-icon {
+            padding: 8px 18px;
+            border: 1px solid rgba(255, 77, 77, 0.4);
+            border-radius: 8px;
+            color: #ff4d4d;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-logout-icon:hover {
+            background: rgba(255, 77, 77, 0.1);
+            border-color: #ff4d4d;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
         }
 
         /* Dashboard Main */
@@ -655,19 +749,38 @@
     <header class="header">
         <div class="nav-container">
             <div class="logo-badge">WELLNEST ✨</div>
-            <nav class="nav-links">
-                <a href="index.html">HOME</a>
-                <a href="about.html">ABOUT US</a>
-                <a href="dashboard.html" class="active">DASHBOARD</a>
-                <a href="tracker.html">TRACKERS</a>
-                <a href="health-tools.html">HEALTH TOOLS</a>
-                <a href="blog.html">BLOG</a>
-                <a href="trainers.html">TRAINERS</a>
-                <a href="profile.html">PROFILE</a>
+            <nav class="nav-links" id="navLinks">
+                <a href="dashboard.html" id="navDashboard" class="active">DASHBOARD</a>
+                <a href="tracker.html" id="navTracker">TRACKERS</a>
+                <a href="health-tools.html" id="navHealth">HEALTH TOOLS</a>
+                <a href="blog.html" id="navBlogs">BLOG</a>
+                <a href="messages.html" id="navMessages" style="display: none;">MESSAGES</a>
+                <a href="trainers.html" id="navTrainers">TRAINERS</a>
+                <a href="admin.html" id="adminLink" style="display: none; color: #ffc107;">ADMIN</a>
             </nav>
-            <div style="font-size: 12px; color: #666; cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                <span id="roleBadge" style="color: #18b046; font-weight: bold;">USER</span>
-                <span id="logoutBtn" style="color:#ff6b6b; font-weight: bold;">LOGOUT</span>
+
+            <div class="user-profile-section">
+                <a href="javascript:void(0)" id="profileChipLink" class="user-profile-chip">
+                    <div class="user-profile-info">
+                        <span class="nav-user-name" id="navUserName">USER</span>
+                        <span class="nav-user-role" id="navUserRole">USER</span>
+                    </div>
+                    <div class="nav-user-avatar" id="navUserAvatarContainer">
+                        <svg id="navUserIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <img src="" id="navUserAvatar" alt="Profile">
+                    </div>
+                </a>
+                <span class="nav-logout-icon" id="logoutBtn">LOGOUT</span>
+            </div>
+
+            <div class="hamburger" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </header>
@@ -745,20 +858,7 @@
             </div>
         </div>
 
-        <!-- Navigation Cards -->
-        <div class="nav-cards">
-            <a href="tracker.html" class="nav-card">
-                <span class="nav-card-icon">🏃</span>
-                <span class="nav-card-title">HEALTH TRACKER</span>
-                <p style="color: #888; font-size: 12px; margin: 0;">Log workouts, meals, water intake, and sleep —
-                    exactly like in your tracker screen.</p>
-            </a>
-            <a href="health-tools.html" class="nav-card">
-                <span class="nav-card-icon">🛠️</span>
-                <span class="nav-card-title">HEALTH TOOLS</span>
-                <p style="color: #888; font-size: 12px; margin: 0;">Use your BMI calculator & daily health tips.</p>
-            </a>
-        </div>
+
 
         <!-- Analytics Overview Section -->
         <section style="margin-bottom: 40px;">
@@ -981,7 +1081,7 @@
         </div>
     </div>
 
-    <script src="dashboard-new.js"></script>
+    <script src="dashboard.js?v=2.2"></script>
 </body>
 
 </html>

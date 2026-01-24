@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - WellNest ✨</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            background: radial-gradient(circle at top, #0f3d1e 0%, #000000 85%);
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(24, 176, 70, 0.2);
+            padding: 0 40px;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-badge {
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(24, 176, 70, 0.15);
+            border: 1px solid #18b046;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #18b046;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a {
+            color: #e0e0e0;
+            text-transform: uppercase;
+            text-decoration: none;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #18b046;
+            text-shadow: 0 0 10px rgba(24, 176, 70, 0.4);
+        }
+
+        /* Animated underline */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #18b046;
+            transform: translateX(-50%);
+            transition: width 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+            box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
+        }
+
+        /* User Profile Section */
+        .user-profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-profile-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(24, 176, 70, 0.3);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .user-profile-chip:hover {
+            background: rgba(24, 176, 70, 0.1);
+            border-color: #18b046;
+            box-shadow: 0 0 15px rgba(24, 176, 70, 0.2);
+        }
+
+        .user-profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+
+        .nav-user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-user-role {
+            font-size: 10px;
+            font-weight: 800;
+            color: #18b046;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #18b046;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(24, 176, 70, 0.1);
+            color: #18b046;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .nav-user-avatar svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.5;
+        }
+
+        .nav-logout-icon {
+            padding: 8px 18px;
+            border: 1px solid rgba(255, 77, 77, 0.4);
+            border-radius: 8px;
+            color: #ff4d4d;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-logout-icon:hover {
+            background: rgba(255, 77, 77, 0.1);
+            border-color: #ff4d4d;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 120px auto 40px;
+            padding: 0 40px;
+            width: 100%;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: #18b046;
+            transform: translateY(-5px);
+        }
+
+        .stat-num {
+            font-size: 32px;
+            font-weight: 800;
+            color: #18b046;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Table Section */
+        .section-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #18b046;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            font-size: 11px;
+            color: #555;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        td {
+            padding: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-delete {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            border-color: #ff4d4d;
+        }
+
+        .btn-delete:hover {
+            background: #ff4d4d;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 77, 77, 0.4);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #18b046;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 50px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            font-weight: 600;
+        }
+
+        /* Search and Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #18b046;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            min-width: 180px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #18b046;
+        }
+
+        .filter-select option {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .clear-filter-btn {
+            padding: 10px 20px;
+            background: rgba(255, 77, 77, 0.1);
+            border: 1px solid #ff4d4d;
+            border-radius: 10px;
+            color: #ff4d4d;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .clear-filter-btn:hover {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        .btn-view {
+            background: rgba(24, 176, 70, 0.1);
+            color: #18b046;
+            border-color: #18b046;
+            margin-right: 5px;
+        }
+
+        .btn-view:hover {
+            background: #18b046;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 176, 70, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(24, 176, 70, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #18b046;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #ff4d4d;
+            font-size: 30px;
+            cursor: pointer;
+            line-height: 1;
+            transition: 0.3s;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Add User/Trainer Button */
+        .add-btn {
+            padding: 10px 20px;
+            background: rgba(24, 176, 70, 0.1);
+            border: 1px solid #18b046;
+            border-radius: 10px;
+            color: #18b046;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-btn:hover {
+            background: #18b046;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(24, 176, 70, 0.3);
+        }
+
+        .add-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 3;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid rgba(24, 176, 70, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: #18b046;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #18b046;
+        }
+
+        .tab-btn:hover {
+            color: #18b046;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* User Cards Container */
+        .user-cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .user-card {
+            background: rgba(15, 61, 30, 0.3);
+            border: 1px solid rgba(24, 176, 70, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .user-card:hover {
+            background: rgba(15, 61, 30, 0.5);
+            border-color: rgba(24, 176, 70, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(24, 176, 70, 0.2);
+        }
+
+        .user-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .user-card-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .user-card-email {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .user-card-delete {
+            padding: 10px 24px;
+            background: #8B0000;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 80px;
+        }
+
+        .user-card-delete:hover {
+            background: #A00000;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo-badge">WELLNEST ✨</div>
+            <nav class="nav-links">
+                <a href="admin.html" class="active">ADMIN DASHBOARD</a>
+                <a href="blog.html">BLOG</a>
+            </nav>
+            <div class="user-profile-section">
+                <a href="javascript:void(0)" class="user-profile-chip" onclick="showAdminProfile()">
+                    <div class="user-profile-info">
+                        <span class="nav-user-name">WellNest Admin</span>
+                        <span class="nav-user-role">ADMIN</span>
+                    </div>
+                    <div class="nav-user-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                </a>
+                <span class="nav-logout-icon" onclick="logout()">LOGOUT</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Platform Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-num" id="statUsers">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statTrainers">0</div>
+                <div class="stat-label">Trainers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statWorkouts">0</div>
+                <div class="stat-label">Workouts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statMeals">0</div>
+                <div class="stat-label">Meals Logged</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statPosts">0</div>
+                <div class="stat-label">Blog Posts</div>
+            </div>
+        </div>
+
+        <!-- Tabbed User/Trainer Management -->
+        <div class="section-card">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="switchTab('users')" id="usersTab">USERS LIST</button>
+                <button class="tab-btn" onclick="switchTab('trainers')" id="trainersTab">TRAINERS LIST</button>
+            </div>
+
+            <!-- Users Tab Content -->
+            <div id="usersContent" class="tab-content active">
+                <!-- User Search and Filter -->
+                <div class="filter-bar">
+                    <input type="text" id="userSearch" class="search-input" placeholder="🔍 Search by name or email...">
+                    <select id="userGoalFilter" class="filter-select">
+                        <option value="">All Goals</option>
+                        <option value="Weight Loss">Weight Loss</option>
+                        <option value="Muscle Gain">Muscle Gain</option>
+                        <option value="Stay Fit">Stay Fit</option>
+                        <option value="Flexibility">Flexibility</option>
+                        <option value="General Health">General Health</option>
+                        <option value="Mental Wellness">Mental Wellness</option>
+                        <option value="Build Muscle">Build Muscle</option>
+                        <option value="Lose Weight">Lose Weight</option>
+                    </select>
+                    <button class="clear-filter-btn" onclick="clearUserFilters()">Clear</button>
+                </div>
+
+                <div id="userTableBody" class="user-cards-container">
+                    <!-- Dynamic user cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Trainers Tab Content -->
+            <div id="trainersContent" class="tab-content">
+                <!-- Trainer Search and Filter -->
+                <div class="filter-bar">
+                    <input type="text" id="trainerSearch" class="search-input"
+                        placeholder="🔍 Search by name or email...">
+                    <select id="trainerSpecFilter" class="filter-select">
+                        <option value="">All Specializations</option>
+                        <option value="Weight Loss">Weight Loss</option>
+                        <option value="Muscle Gain">Muscle Gain</option>
+                        <option value="Yoga">Yoga & Mindfulness</option>
+                        <option value="General Fitness">General Fitness</option>
+                        <option value="Cardio">Cardio Training</option>
+                    </select>
+                    <button class="clear-filter-btn" onclick="clearTrainerFilters()">Clear</button>
+                </div>
+
+                <div id="trainerTableBody" class="user-cards-container">
+                    <!-- Dynamic trainer cards will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <!-- User/Trainer Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">User Details</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New User</h2>
+                <button class="modal-close" onclick="closeAddUserModal()">&times;</button>
+            </div>
+            <form id="addUserForm" onsubmit="submitAddUser(event)">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Full Name *</div>
+                        <input type="text" id="newUserName" required
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Email *</div>
+                        <input type="email" id="newUserEmail" required
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Password *</div>
+                        <input type="password" id="newUserPassword" required
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Age</div>
+                        <input type="number" id="newUserAge" min="1" max="120"
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Weight (kg)</div>
+                        <input type="number" id="newUserWeight" min="1" step="0.1"
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Fitness Goal</div>
+                        <select id="newUserGoal"
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                            <option value="">Select Goal</option>
+                            <option value="Weight Loss">Weight Loss</option>
+                            <option value="Muscle Gain">Muscle Gain</option>
+                            <option value="Stay Fit">Stay Fit</option>
+                            <option value="Flexibility">Flexibility</option>
+                            <option value="General Health">General Health</option>
+                            <option value="Mental Wellness">Mental Wellness</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="btn-action btn-view" style="flex: 1; padding: 12px;">Add User</button>
+                    <button type="button" class="btn-action btn-delete" onclick="closeAddUserModal()"
+                        style="flex: 1; padding: 12px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Trainer Modal -->
+    <div id="addTrainerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Trainer</h2>
+                <button class="modal-close" onclick="closeAddTrainerModal()">&times;</button>
+            </div>
+            <form id="addTrainerForm" onsubmit="submitAddTrainer(event)">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Trainer Name *</div>
+                        <input type="text" id="newTrainerName" required
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Contact Email *</div>
+                        <input type="email" id="newTrainerEmail" required
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Age</div>
+                        <input type="number" id="newTrainerAge" min="18" max="100"
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Experience (years) *</div>
+                        <input type="number" id="newTrainerExperience" required min="0" max="50"
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <div class="detail-label">Specialization *</div>
+                        <select id="newTrainerSpecialization" required
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px;">
+                            <option value="">Select Specialization</option>
+                            <option value="Weight Loss">Weight Loss</option>
+                            <option value="Muscle Gain">Muscle Gain</option>
+                            <option value="Yoga">Yoga & Mindfulness</option>
+                            <option value="General Fitness">General Fitness</option>
+                            <option value="Cardio">Cardio Training</option>
+                        </select>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <div class="detail-label">Bio</div>
+                        <textarea id="newTrainerBio" rows="3"
+                            style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-top: 5px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="btn-action btn-view" style="flex: 1; padding: 12px;">Add
+                        Trainer</button>
+                    <button type="button" class="btn-action btn-delete" onclick="closeAddTrainerModal()"
+                        style="flex: 1; padding: 12px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Profile Modal -->
+    <div id="adminProfileModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 class="modal-title">👤 Admin Profile</h2>
+                <button class="modal-close" onclick="closeAdminProfile()">&times;</button>
+            </div>
+            <div style="padding: 30px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div
+                        style="width: 80px; height: 80px; margin: 0 auto 15px; background: rgba(24, 176, 70, 0.2); border: 2px solid #18b046; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#18b046"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="width: 40px; height: 40px;">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <h3 style="color: #fff; margin-bottom: 5px;">WellNest Administrator</h3>
+                    <p style="color: #18b046; font-size: 14px; font-weight: 600;">ADMIN ROLE</p>
+                </div>
+
+                <div
+                    style="background: rgba(15, 61, 30, 0.3); border: 1px solid rgba(24, 176, 70, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: grid; gap: 15px;">
+                        <div>
+                            <div style="color: #888; font-size: 12px; margin-bottom: 5px;">EMAIL</div>
+                            <div style="color: #fff; font-weight: 600;" id="adminEmail">admin@wellnest.com</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 12px; margin-bottom: 5px;">ROLE</div>
+                            <div style="color: #fff; font-weight: 600;">System Administrator</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 12px; margin-bottom: 5px;">ACCESS LEVEL</div>
+                            <div style="color: #18b046; font-weight: 600;">Full Access</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 12px; margin-bottom: 5px;">LAST LOGIN</div>
+                            <div style="color: #fff; font-weight: 600;" id="adminLastLogin">Just now</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="closeAdminProfile()"
+                        style="flex: 1; padding: 12px; background: rgba(24, 176, 70, 0.1); border: 1px solid #18b046; border-radius: 8px; color: #18b046; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                        CLOSE
+                    </button>
+                    <button onclick="logout()"
+                        style="flex: 1; padding: 12px; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 8px; color: #ff4d4d; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                        LOGOUT
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js?v=20260124213400"></script>
+</body>
+
+</html>

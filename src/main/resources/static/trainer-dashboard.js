@@ -10,6 +10,27 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchPendingRequests();
     fetchTrainerProfileAndStats();
     renderCalendar();
+
+    // Hamburger Logic
+    const hamburger = document.getElementById('hamburgerMenu');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // Logout Logic
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        });
+    }
 });
 
 let currentClientId = null;
@@ -271,6 +292,7 @@ async function fetchTrainerProfileAndStats() {
             const trainers = await response.json();
             const me = trainers.find(t => t.contactEmail === email);
             if (me) {
+                console.log("DEBUG: Found trainer profile", me);
                 trainerData = me;
                 localStorage.setItem('trainerProfileId', me.id);
                 localStorage.setItem('fullName', me.name);
@@ -282,6 +304,17 @@ async function fetchTrainerProfileAndStats() {
                 document.getElementById('profileModalBio').textContent = me.bio || "No bio available.";
                 if (me.imageUrl) {
                     document.getElementById('profileModalImg').src = me.imageUrl;
+                }
+
+                // Update Navbar Chip
+                const navUserName = document.getElementById("navUserName");
+                if (navUserName) navUserName.innerText = me.name;
+                const navUserAvatar = document.getElementById("navUserAvatar");
+                const navUserIcon = document.getElementById("navUserIcon");
+                if (me.imageUrl && navUserAvatar) {
+                    navUserAvatar.src = me.imageUrl;
+                    navUserAvatar.style.display = "block";
+                    if (navUserIcon) navUserIcon.style.display = "none";
                 }
             }
         }
@@ -296,6 +329,68 @@ function closeTrainerProfile() {
     document.getElementById('trainerProfileModal').style.display = 'none';
 }
 
+function openEditProfile() {
+    console.log("DEBUG: openEditProfile called", trainerData);
+    if (!trainerData) {
+        alert("Error: Trainer profile data is missing. Please refresh the page.");
+        return;
+    }
+
+    // Fill form
+    document.getElementById('editTrainerName').value = trainerData.name || '';
+    document.getElementById('editTrainerSpec').value = trainerData.specialization || '';
+    document.getElementById('editTrainerExp').value = trainerData.experienceYears || 0;
+    document.getElementById('editTrainerAge').value = trainerData.age || 0;
+    document.getElementById('editTrainerImg').value = trainerData.imageUrl || '';
+    document.getElementById('editTrainerBio').value = trainerData.bio || '';
+
+    // Toggle modals
+    closeTrainerProfile();
+    document.getElementById('trainerEditModal').style.display = 'flex';
+}
+
+function closeEditProfile() {
+    document.getElementById('trainerEditModal').style.display = 'none';
+}
+
+async function submitTrainerUpdate() {
+    if (!trainerData || !trainerData.id) return;
+
+    const payload = {
+        name: document.getElementById('editTrainerName').value.trim(),
+        specialization: document.getElementById('editTrainerSpec').value.trim(),
+        experienceYears: parseInt(document.getElementById('editTrainerExp').value) || 0,
+        age: parseInt(document.getElementById('editTrainerAge').value) || 0,
+        imageUrl: document.getElementById('editTrainerImg').value.trim(),
+        bio: document.getElementById('editTrainerBio').value.trim()
+    };
+
+    if (!payload.name || !payload.specialization) {
+        alert("Name and Specialization are required.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/trainers/${trainerData.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            alert("Profile updated successfully!");
+            closeEditProfile();
+            fetchTrainerProfileAndStats(); // Refresh view
+        } else {
+            const errorText = await response.text();
+            alert("Failed to update profile: " + errorText);
+        }
+    } catch (e) {
+        console.error("Error updating trainer profile:", e);
+        alert("An error occurred. Check console.");
+    }
+}
+
 // --- Dynamic Calendar Logic ---
 
 function openCalendar() {
@@ -308,35 +403,47 @@ function closeCalendar() {
 }
 
 function renderCalendar() {
-    const grid = document.getElementById('calendarGrid');
-    const monthYearLabel = document.getElementById('calendarMonthYear');
-    if (!grid || !monthYearLabel) return;
+    const mainGrid = document.getElementById('calendarGrid');
+    const mainLabel = document.getElementById('calendarMonthYear');
+    const miniGrid = document.getElementById('miniCalendarGrid');
+    const miniLabel = document.getElementById('miniCalendarMonth');
+
+    if (!mainGrid || !mainLabel) return;
 
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const today = new Date();
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    monthYearLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    mainLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    if (miniLabel) miniLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-    grid.innerHTML = "";
+    mainGrid.innerHTML = "";
+    if (miniGrid) miniGrid.innerHTML = "";
+
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     dayNames.forEach(d => {
-        grid.innerHTML += `<div class="calendar-day-name">${d}</div>`;
+        const headerHtml = `<div class="calendar-day-name">${d}</div>`;
+        mainGrid.innerHTML += headerHtml;
+        if (miniGrid) miniGrid.innerHTML += headerHtml;
     });
 
     for (let i = 0; i < firstDay; i++) {
-        grid.innerHTML += `<div class="calendar-date other-month"></div>`;
+        const emptyHtml = `<div class="calendar-date other-month"></div>`;
+        mainGrid.innerHTML += emptyHtml;
+        if (miniGrid) miniGrid.innerHTML += emptyHtml;
     }
 
     for (let d = 1; d <= daysInMonth; d++) {
         const isToday = today.getDate() === d && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
-        const hasEvent = d % 5 === 0; // Mock events every 5 days
-        grid.innerHTML += `
+        const hasEvent = d % 5 === 0;
+        const dateHtml = `
             <div class="calendar-date ${isToday ? 'today' : ''} ${hasEvent ? 'has-event' : ''}" onclick="selectDate(${d})">
                 ${d}
             </div>
         `;
+        mainGrid.innerHTML += dateHtml;
+        if (miniGrid) miniGrid.innerHTML += dateHtml;
     }
 }
 
@@ -357,6 +464,7 @@ function nextMonth() {
     }
     renderCalendar();
 }
+
 
 function selectDate(day) {
     const eventsBox = document.getElementById('selectedDateEvents');

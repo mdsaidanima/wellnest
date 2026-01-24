@@ -30,43 +30,45 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(6px);
-            border-bottom: 1px solid rgba(24, 176, 70, 0.1);
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(24, 176, 70, 0.2);
+            padding: 0 20px;
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 12px 20px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .logo-badge {
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 999px;
-            background: rgba(24, 176, 70, 0.1);
+            background: rgba(24, 176, 70, 0.15);
             border: 1px solid #18b046;
-            font-size: 13px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: #18b046;
+            box-shadow: 0 0 15px rgba(24, 176, 70, 0.3);
         }
 
         .nav-links {
             display: flex;
             gap: 30px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 0.5px;
         }
 
         .nav-links a {
-            color: #e0e0e0;
+            color: #ccc;
             text-transform: uppercase;
             text-decoration: none;
             position: relative;
@@ -74,28 +76,104 @@
             transition: color 0.3s ease;
         }
 
-        .nav-links a:hover,
-        .nav-links a.active {
+        .nav-links a.active,
+        .nav-links a:hover {
             color: #18b046;
-            text-shadow: 0 0 15px rgba(24, 176, 70, 0.9), 0 0 25px rgba(24, 176, 70, 0.5);
+            text-shadow: 0 0 10px rgba(24, 176, 70, 0.6);
         }
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background-color: #18b046;
-            transform: translateX(-50%);
-            transition: width 0.3s ease, box-shadow 0.3s ease;
+        /* Standardized User Profile Section */
+        .user-profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .nav-links a:hover::after,
-        .nav-links a.active::after {
+        .user-profile-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(24, 176, 70, 0.3);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .user-profile-chip:hover {
+            background: rgba(24, 176, 70, 0.1);
+            border-color: #18b046;
+            box-shadow: 0 0 15px rgba(24, 176, 70, 0.2);
+        }
+
+        .user-profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+
+        .nav-user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-user-role {
+            font-size: 10px;
+            font-weight: 800;
+            color: #18b046;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #18b046;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(24, 176, 70, 0.1);
+            color: #18b046;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .nav-user-avatar img {
             width: 100%;
-            box-shadow: 0 0 8px rgba(24, 176, 70, 0.6);
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .nav-user-avatar svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.5;
+        }
+
+        .nav-logout-icon {
+            padding: 8px 18px;
+            border: 1px solid rgba(255, 77, 77, 0.4);
+            border-radius: 8px;
+            color: #ff4d4d;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-logout-icon:hover {
+            background: rgba(255, 77, 77, 0.1);
+            border-color: #ff4d4d;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
         }
 
         /* Hamburger */
@@ -433,13 +511,31 @@
     <!-- Header -->
     <header class="header">
         <div class="nav-container">
-            <div class="logo-badge">WELLNEST</div>
+            <div class="logo-badge">WELLNEST ✨</div>
             <nav class="nav-links" id="navLinks">
                 <a href="trainer-dashboard.html">DASHBOARD</a>
-                <a href="blog.html">BLOGS</a>
+                <a href="blog.html">BLOG</a>
                 <a href="messages.html" class="active">MESSAGES</a>
-                <a class="nav-logout" onclick="logout()">LOGOUT</a>
             </nav>
+
+            <div class="user-profile-section">
+                <a href="javascript:void(0)" id="profileChipLink" class="user-profile-chip">
+                    <div class="user-profile-info">
+                        <span class="nav-user-name" id="navUserName">USER</span>
+                        <span class="nav-user-role" id="navUserRole">USER</span>
+                    </div>
+                    <div class="nav-user-avatar" id="navUserAvatarContainer">
+                        <svg id="navUserIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <img src="" id="navUserAvatar" alt="Profile">
+                    </div>
+                </a>
+                <span class="nav-logout-icon" id="logoutBtn">LOGOUT</span>
+            </div>
+
             <div class="hamburger" id="hamburgerMenu">
                 <span></span>
                 <span></span>
